@@ -37,6 +37,7 @@ export default function EncounterPage() {
   >('poke-ball')
   const [shakeCount, setShakeCount] = useState(0)
   const [showNickname, setShowNickname] = useState(false)
+  const [isCriticalCatch, setIsCriticalCatch] = useState(false)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const throwTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -47,6 +48,7 @@ export default function EncounterPage() {
   useEffect(() => {
     if (activeEncounter?.speciesId) {
       markSeen(activeEncounter.speciesId)
+      setIsCriticalCatch(false)
     }
   }, [activeEncounter?.speciesId, markSeen])
 
@@ -111,6 +113,7 @@ export default function EncounterPage() {
       activeEncounter.level
     )
     const success = Math.random() <= probability
+    const isCritical = success && ball !== 'master-ball' && Math.random() < 0.05
 
     // Clean up any existing animations first
     if (throwTimeoutRef.current) clearTimeout(throwTimeoutRef.current)
@@ -121,13 +124,26 @@ export default function EncounterPage() {
     throwTimeoutRef.current = setTimeout(() => {
       setCatchState('shaking')
 
-      // Determine shakes based on proximity (Master ball = 3, high probability = 3, low = 1-2)
-      const shakes =
-        ball === 'master-ball'
-          ? 3
-          : Math.random() < probability
-            ? 3
-            : Math.floor(Math.random() * 2) + 1
+      // Determine shakes based on success and critical status
+      let shakes = 3
+      if (isCritical) {
+        shakes = 1
+      } else if (!success) {
+        // Map failure shakes based on proximity of failure
+        const roll = Math.random()
+        if (probability < 0.1) {
+          shakes = roll < 0.8 ? 0 : 1
+        } else if (probability > 0.5) {
+          shakes = roll < 0.3 ? 0 : roll < 0.7 ? 1 : 2
+        } else {
+          shakes = roll < 0.4 ? 0 : roll < 0.8 ? 1 : 2
+        }
+      }
+
+      if (shakes === 0) {
+        setCatchState('escaped')
+        return
+      }
 
       let currentShake = 0
       shakeIntervalRef.current = setInterval(() => {
@@ -142,6 +158,7 @@ export default function EncounterPage() {
             if (success) {
               setCatchState('caught')
               setShowNickname(true)
+              setIsCriticalCatch(isCritical)
             } else {
               setCatchState('escaped')
             }
@@ -262,13 +279,22 @@ export default function EncounterPage() {
       {/* Ball Picker Panel */}
       <div className="flex justify-center z-10">
         {catchState === 'idle' && (
-          <BallPicker onSelect={handleCatchAttempt} disabled={catchState !== 'idle'} />
+          <BallPicker
+            onSelect={handleCatchAttempt}
+            disabled={catchState !== 'idle'}
+            captureRate={species?.capture_rate}
+            level={activeEncounter.level}
+          />
         )}
       </div>
 
       {/* Gotcha Nickname Overlay */}
       {showNickname && (
-        <NicknameModal speciesName={activeEncounter.name} onConfirm={handleNicknameConfirm} />
+        <NicknameModal
+          speciesName={activeEncounter.name}
+          onConfirm={handleNicknameConfirm}
+          isCritical={isCriticalCatch}
+        />
       )}
     </div>
   )
