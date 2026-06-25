@@ -42,7 +42,7 @@ export default function PartyPage() {
           Maintain up to 6 active Pokémon. Select a slot to choose from bag.
         </p>
 
-        {/* 6 Party Slots Grid */}
+        {/* 6 Party Slots Grid - 2 cols on mobile, 3 cols on larger screens */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-8">
           {partySlots.map((pokemon, idx) => {
             const isSelected = selectedSlotIndex === idx
@@ -50,51 +50,66 @@ export default function PartyPage() {
               <div
                 // biome-ignore lint/suspicious/noArrayIndexKey: slot index is stable (always 6 slots)
                 key={idx}
-                className={`p-4 bg-surface/50 border rounded-2xl relative flex flex-col items-center justify-center min-h-[140px] transition-all ${
+                className={`bg-surface/50 border rounded-2xl relative flex flex-col justify-between overflow-hidden aspect-square min-h-[160px] transition-all ${
                   isSelected
                     ? 'border-highlight ring-1 ring-highlight bg-surface/90 shadow-lg'
                     : 'border-accent/30'
                 }`}
               >
-                <div className="absolute top-2 left-2 text-sm font-black text-muted uppercase">
-                  Slot #{idx + 1}
+                {/* Top Content Body */}
+                <div className="p-4 pb-2 flex-1 flex flex-col items-center justify-center relative w-full">
+                  <div className="absolute top-2 left-2 text-[10px] sm:text-xs font-black text-muted uppercase">
+                    Slot #{idx + 1}
+                  </div>
+
+                  {pokemon ? (
+                    <div className="flex flex-col items-center mt-2 w-full">
+                      <img
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.speciesId}.png`}
+                        alt={pokemon.nickname}
+                        className="w-14 h-14 sm:w-16 sm:h-16 object-contain"
+                        width={64}
+                        height={64}
+                      />
+                      <span className="font-bold text-sm text-foreground truncate max-w-full text-center mt-1">
+                        {pokemon.nickname}
+                      </span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSlot(idx)}
+                      className="w-full h-full min-h-[80px] flex flex-col items-center justify-center gap-1.5 text-muted hover:text-highlight cursor-pointer focus:outline-none"
+                      aria-label={`Empty Slot #${idx + 1}`}
+                    >
+                      <div className="w-8 h-8 rounded-full border border-dashed border-muted flex items-center justify-center text-lg leading-none">
+                        +
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider">
+                        EMPTY SLOT
+                      </span>
+                    </button>
+                  )}
                 </div>
 
-                {pokemon ? (
-                  <div className="flex flex-col items-center w-full mt-4">
-                    <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.speciesId}.png`}
-                      alt={pokemon.nickname}
-                      className="w-16 h-16 object-contain"
-                    />
-                    <span className="font-bold text-sm text-foreground truncate max-w-full">
-                      {pokemon.nickname}
-                    </span>
-                    <div className="flex gap-2 mt-3 z-10">
-                      <button
-                        onClick={() => handleSelectSlot(idx)}
-                        className="text-sm font-extrabold text-highlight hover:text-white bg-accent/20 px-3 py-1.5 rounded-md border border-accent/30 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
-                        type="button"
-                      >
-                        REPLACE
-                      </button>
-                      <button
-                        onClick={() => removeFromParty(pokemon.uid)}
-                        className="text-sm font-extrabold text-red-400 hover:text-red-300 bg-red-950/40 px-3 py-1.5 rounded-md border border-red-500/20 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
-                        type="button"
-                      >
-                        REMOVE
-                      </button>
-                    </div>
+                {/* Bottom Action buttons for filled slots */}
+                {pokemon && (
+                  <div className="flex border-t border-accent/20 shrink-0 w-full bg-background/40">
+                    <button
+                      onClick={() => handleSelectSlot(idx)}
+                      className="flex-1 py-2 text-xs font-bold text-highlight hover:text-foreground hover:bg-accent/20 transition-all border-r border-accent/20 cursor-pointer min-h-[36px] flex items-center justify-center"
+                      type="button"
+                    >
+                      REPLACE
+                    </button>
+                    <button
+                      onClick={() => removeFromParty(pokemon.uid)}
+                      className="flex-1 py-2 text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-950/20 transition-all cursor-pointer min-h-[36px] flex items-center justify-center"
+                      type="button"
+                    >
+                      REMOVE
+                    </button>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleSelectSlot(idx)}
-                    className="w-full h-full min-h-[100px] flex items-center justify-center text-sm text-muted font-bold font-mono hover:text-highlight cursor-pointer focus:outline-none"
-                  >
-                    EMPTY SLOT
-                  </button>
                 )}
               </div>
             )
@@ -124,6 +139,8 @@ export default function PartyPage() {
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.speciesId}.png`}
                       alt={p.nickname}
                       className="w-12 h-12 object-contain"
+                      width={48}
+                      height={48}
                     />
                     <span className="text-sm font-bold text-foreground truncate max-w-full">
                       {p.nickname}

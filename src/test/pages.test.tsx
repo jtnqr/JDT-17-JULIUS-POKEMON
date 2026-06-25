@@ -89,7 +89,7 @@ describe('AreaPage Component', () => {
     })
 
     expect(screen.getByText('Route 1')).toBeInTheDocument()
-    expect(screen.getByText('EXPLORE ROUTE')).toBeInTheDocument()
+    expect(screen.getByText(/explore/i)).toBeInTheDocument()
   })
 
   it('triggers encounter when EXPLORE ROUTE button is clicked', async () => {
@@ -118,7 +118,7 @@ describe('AreaPage Component', () => {
       expect(screen.getByText('pidgey')).toBeInTheDocument()
     })
 
-    const exploreBtn = screen.getByRole('button', { name: /explore route/i })
+    const exploreBtn = screen.getByRole('button', { name: /explore/i })
     fireEvent.click(exploreBtn)
 
     // Verify game store set the active encounter

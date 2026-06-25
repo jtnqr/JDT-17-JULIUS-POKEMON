@@ -26,7 +26,7 @@ export function PokemonCard({
   return (
     <Link
       to={`/pokemon/${id}`}
-      className="block relative overflow-hidden bg-surface/60 backdrop-blur-sm border border-accent/40 rounded-xl p-4 transition-all duration-300 hover:scale-102 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)] group scanlines"
+      className="block relative overflow-hidden bg-surface/60 backdrop-blur-sm border border-accent/40 rounded-xl p-4 transition-all duration-300 hover:scale-102 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)] group scanlines h-[260px]"
     >
       {partySlot != null && (
         <div className="absolute top-2 left-2 bg-highlight text-background font-bold text-sm px-2 py-0.5 rounded-full z-10 border border-background">
@@ -39,39 +39,57 @@ export function PokemonCard({
         </div>
       )}
 
-      <div className="flex flex-col items-center">
-        <img
-          src={sprite}
-          alt={nickname || name}
-          loading="lazy"
-          className="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110"
-          width={96}
-          height={96}
-        />
-        <h3 className="text-lg font-bold text-foreground capitalize mt-2 truncate max-w-full">
-          {nickname || name}
-        </h3>
-        {nickname && (
-          <span className="text-sm text-muted font-mono capitalize truncate max-w-full">
-            ({name})
-          </span>
-        )}
-        <span className="text-sm text-accent font-semibold mt-1">
-          #{String(id).padStart(3, '0')}
-        </span>
-
-        <div className="flex gap-1 mt-2 flex-wrap justify-center">
-          {types.map((t) => (
-            <TypeBadge key={t} type={t} />
-          ))}
+      <div className="flex flex-col items-center h-full">
+        {/* Sprite container - flex growable with shrink protection */}
+        <div className="flex-1 flex items-center justify-center min-h-0">
+          <img
+            src={sprite}
+            alt={nickname || name}
+            loading="lazy"
+            className="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110"
+            width={96}
+            height={96}
+          />
         </div>
 
-        {ballUsed && (
-          <div className="flex items-center gap-1 mt-3 text-sm text-muted">
-            <BallIcon type={ballUsed} className="w-4 h-4" />
-            <span>Caught</span>
+        {/* Text information wrapper - stable size */}
+        <div className="w-full flex flex-col items-center mt-2 shrink-0">
+          <h3 className="text-base sm:text-lg font-bold text-foreground capitalize truncate max-w-full text-center leading-tight">
+            {nickname || name}
+          </h3>
+          {nickname ? (
+            <span className="text-sm text-muted font-mono capitalize truncate max-w-full text-center leading-tight">
+              ({name})
+            </span>
+          ) : (
+            <span
+              className="text-sm text-transparent font-mono select-none leading-tight"
+              aria-hidden="true"
+            >
+              &nbsp;
+            </span>
+          )}
+          <span className="text-sm text-accent font-semibold mt-1">
+            #{String(id).padStart(3, '0')}
+          </span>
+
+          <div className="flex gap-1 mt-2 flex-wrap justify-center max-h-[22px] overflow-hidden">
+            {types.map((t) => (
+              <TypeBadge key={t} type={t} />
+            ))}
           </div>
-        )}
+
+          {ballUsed ? (
+            <div className="flex items-center gap-1 mt-3 text-sm text-muted shrink-0">
+              <BallIcon type={ballUsed} className="w-4 h-4" />
+              <span>Caught</span>
+            </div>
+          ) : (
+            <div className="mt-3 text-sm text-transparent select-none shrink-0" aria-hidden="true">
+              &nbsp;
+            </div>
+          )}
+        </div>
       </div>
     </Link>
   )

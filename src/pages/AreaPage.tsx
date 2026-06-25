@@ -196,15 +196,22 @@ export default function AreaPage() {
       </div>
 
       {/* Bottom Explore Panel */}
-      <div className="bg-background/95 border-t border-accent/30 p-6 flex flex-col items-center z-10">
+      <div className="bg-background/95 border-t border-accent/30 p-6 flex flex-col items-center z-10 w-full">
         <button
           onClick={handleExplore}
           disabled={isLoading || encounterPool.length === 0}
-          className="w-full max-w-md flex items-center justify-center gap-2 bg-gradient-to-r from-accent to-highlight hover:from-highlight hover:to-accent text-background font-bold py-4 rounded-xl border border-highlight/50 shadow-[0_0_15px_rgba(205,127,50,0.4)] hover:scale-102 hover:shadow-[0_0_20px_rgba(255,215,0,0.5)] transition-all duration-300 disabled:opacity-40 disabled:scale-100 cursor-pointer"
+          className="group relative w-full max-w-md py-4 px-8 rounded-xl font-heading font-bold text-lg text-bg bg-gradient-to-br from-accent to-gold border border-accent/60 shadow-[0_0_20px_rgba(205,127,50,0.4)] hover:shadow-[0_0_32px_rgba(205,127,50,0.7)] hover:scale-102 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer flex items-center justify-center gap-2"
           type="button"
         >
-          <Compass className="animate-spin-slow" size={22} />
-          <span>EXPLORE ROUTE</span>
+          <span
+            className="absolute inset-0 rounded-xl opacity-10 pointer-events-none"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 3px)',
+            }}
+          />
+          <Compass className="animate-spin-slow relative" size={22} />
+          <span className="relative font-bold">{isLoading ? 'Searching…' : '⚔ Explore!'}</span>
         </button>
       </div>
     </div>

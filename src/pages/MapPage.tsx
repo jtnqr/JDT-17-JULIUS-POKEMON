@@ -105,7 +105,7 @@ export default function MapPage() {
               </div>
 
               {/* Tooltip Label */}
-              <div className="mt-1 bg-background/90 text-sm font-bold text-foreground px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity duration-300 shadow-md">
+              <div className="mt-1 bg-background/90 text-[10px] sm:text-sm font-bold text-foreground px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity duration-300 shadow-md max-w-[64px] sm:max-w-none truncate">
                 {area.name}
               </div>
             </button>

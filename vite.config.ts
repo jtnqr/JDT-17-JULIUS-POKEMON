@@ -12,6 +12,37 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (
+              id.includes('react/') ||
+              id.includes('react-dom/') ||
+              id.includes('react-router-dom/') ||
+              id.includes('@remix-run/')
+            ) {
+              return 'react'
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'query'
+            }
+            if (id.includes('@dnd-kit')) {
+              return 'dndkit'
+            }
+            if (id.includes('zustand')) {
+              return 'zustand'
+            }
+            if (id.includes('lucide-react')) {
+              return 'lucide'
+            }
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 500,
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
