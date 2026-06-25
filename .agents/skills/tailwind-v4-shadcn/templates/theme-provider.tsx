@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -29,10 +29,12 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(() => {
     // Try localStorage first, fall back to sessionStorage, then default
     try {
-      return (localStorage.getItem(storageKey) as Theme) ||
-             (sessionStorage.getItem(storageKey) as Theme) ||
-             defaultTheme
-    } catch (e) {
+      return (
+        (localStorage.getItem(storageKey) as Theme) ||
+        (sessionStorage.getItem(storageKey) as Theme) ||
+        defaultTheme
+      )
+    } catch (_e) {
       // Storage unavailable (incognito/privacy mode) - use default
       return defaultTheme
     }
@@ -44,8 +46,7 @@ export function ThemeProvider({
     root.classList.remove('light', 'dark')
 
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light'
 
@@ -62,11 +63,11 @@ export function ThemeProvider({
       // Try to persist to localStorage, fall back to sessionStorage
       try {
         localStorage.setItem(storageKey, theme)
-      } catch (e) {
+      } catch (_e) {
         // localStorage unavailable (incognito) - use sessionStorage
         try {
           sessionStorage.setItem(storageKey, theme)
-        } catch (err) {
+        } catch (_err) {
           // Both unavailable - just update state without persistence
           console.warn('Storage unavailable, theme preference will not persist')
         }
@@ -85,8 +86,7 @@ export function ThemeProvider({
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext)
 
-  if (context === undefined)
-    throw new Error('useTheme must be used within a ThemeProvider')
+  if (context === undefined) throw new Error('useTheme must be used within a ThemeProvider')
 
   return context
 }
