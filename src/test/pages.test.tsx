@@ -16,6 +16,7 @@ const queryClient = new QueryClient({
 
 afterEach(() => {
   vi.restoreAllMocks()
+  queryClient.clear()
 })
 
 const mockEncounterData = {
@@ -130,5 +131,78 @@ describe('AreaPage Component', () => {
 
     // Verify navigation happened
     expect(screen.getByText('Encounter Screen')).toBeInTheDocument()
+  })
+
+  it('correctly filters wildlife by timeOfDay and handles non-time conditions like radar', async () => {
+    const customEncounterData = {
+      id: 1,
+      name: 'kanto-route-1-area',
+      pokemon_encounters: [
+        {
+          pokemon: { name: 'rattata', url: 'https://pokeapi.co/v2/pokemon/19/' },
+          version_details: [
+            {
+              version: { name: 'red' },
+              max_chance: 50,
+              encounter_details: [
+                {
+                  min_level: 2,
+                  max_level: 4,
+                  chance: 50,
+                  method: { name: 'walk' },
+                  condition_values: [{ name: 'radar' }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          pokemon: { name: 'hoothoot', url: 'https://pokeapi.co/v2/pokemon/163/' },
+          version_details: [
+            {
+              version: { name: 'red' },
+              max_chance: 50,
+              encounter_details: [
+                {
+                  min_level: 2,
+                  max_level: 4,
+                  chance: 50,
+                  method: { name: 'walk' },
+                  condition_values: [{ name: 'time-night' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(customEncounterData),
+      } as Response)
+    )
+
+    // Force date to be day time (12:00)
+    vi.spyOn(Date.prototype, 'getHours').mockReturnValue(12)
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/area/kanto-route-1']}>
+          <Routes>
+            <Route path="/area/:id" element={<AreaPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+    // Wait for the mock encounter wildlife to load
+    await waitFor(() => {
+      expect(screen.getByText('rattata')).toBeInTheDocument()
+    })
+
+    // Hoothoot should NOT be in the document (it's daytime and it has time-night condition)
+    expect(screen.queryByText('hoothoot')).not.toBeInTheDocument()
   })
 })

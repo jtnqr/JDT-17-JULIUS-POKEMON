@@ -45,13 +45,19 @@ export default function AreaPage() {
   const timeSlotFilter = (
     detail: PokemonEncounter['version_details'][number]['encounter_details'][number]
   ) => {
-    const timeSlots = detail.condition_values.map((c) => c.name)
-    if (timeSlots.length === 0) return true // Available anytime
+    const conditions = detail.condition_values.map((c) => c.name)
+    const timeConditions = conditions.filter((name) =>
+      ['time-morning', 'morning', 'time-day', 'day', 'time-night', 'night'].includes(name)
+    )
+    if (timeConditions.length === 0) return true // Available anytime
 
-    if (timeOfDay === 'morning')
-      return timeSlots.includes('time-morning') || timeSlots.includes('morning')
-    if (timeOfDay === 'day') return timeSlots.includes('time-day') || timeSlots.includes('day')
-    return timeSlots.includes('time-night') || timeSlots.includes('night')
+    if (timeOfDay === 'morning') {
+      return timeConditions.includes('time-morning') || timeConditions.includes('morning')
+    }
+    if (timeOfDay === 'day') {
+      return timeConditions.includes('time-day') || timeConditions.includes('day')
+    }
+    return timeConditions.includes('time-night') || timeConditions.includes('night')
   }
 
   const encounterPool =
