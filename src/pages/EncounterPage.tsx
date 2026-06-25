@@ -8,6 +8,7 @@ import { NicknameModal } from '@/components/encounter/NicknameModal'
 import { BallIcon } from '@/components/ui/BallIcon'
 import { usePokemon, usePokemonSpecies } from '@/hooks/usePokemon'
 import { staticAreas } from '@/lib/areaMap'
+import { getBiomeStyles } from '@/lib/areaMapHelper'
 import { calculateCatchChance } from '@/lib/catchCalc'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useGameStore } from '@/stores/gameStore'
@@ -22,6 +23,7 @@ export default function EncounterPage() {
   const activeEncounter = useGameStore((s) => s.activeEncounter)
   const setActiveEncounter = useGameStore((s) => s.setActiveEncounter)
   const currentAreaId = useGameStore((s) => s.currentAreaId)
+  const timeOfDay = useGameStore((s) => s.timeOfDay)
   const catchPokemon = useCollectionStore((s) => s.catchPokemon)
   const markSeen = useCollectionStore((s) => s.markSeen)
   const soundEnabled = useSettingsStore((s) => s.soundEnabled)
@@ -201,8 +203,14 @@ export default function EncounterPage() {
 
   const pokemonSprite = getEncounterSprite()
 
+  const currentArea = staticAreas.find((a) => a.id === currentAreaId)
+  const biome = currentArea?.biome || 'grassland'
+  const bgStyles = getBiomeStyles(biome, timeOfDay)
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-between p-6 bg-radial-gradient(from-stone-900_to-background) scanlines relative">
+    <div
+      className={`min-h-[calc(100vh-4rem)] flex flex-col justify-between p-6 scanlines overflow-hidden ${bgStyles}`}
+    >
       <Helmet>
         <title>Wild Encounter — Pokédex Bronze</title>
         <meta
