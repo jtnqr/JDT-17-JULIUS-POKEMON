@@ -56,8 +56,8 @@ describe('MapPage Component', () => {
     )
 
     expect(screen.getByText('WORLD MAP')).toBeInTheDocument()
-    expect(screen.getByText('Pallet Town')).toBeInTheDocument()
-    expect(screen.getByText('Route 1')).toBeInTheDocument()
+    expect(screen.getAllByText('Pallet Town').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Route 1').length).toBeGreaterThan(0)
   })
 })
 

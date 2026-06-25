@@ -1,7 +1,18 @@
+export type Region =
+  | 'Kanto'
+  | 'Johto'
+  | 'Hoenn'
+  | 'Sinnoh'
+  | 'Unova'
+  | 'Kalos'
+  | 'Alola'
+  | 'Galar'
+  | 'Paldea'
+
 export interface AreaNode {
   id: string
   name: string
-  region: string
+  region: Region
   biome:
     | 'forest'
     | 'grassland'
@@ -19,6 +30,18 @@ export interface AreaNode {
   coords: { x: number; y: number }
   locationAreaName: string // PokéAPI location-area identifier
 }
+
+export const REGION_ORDER: Region[] = [
+  'Kanto',
+  'Johto',
+  'Hoenn',
+  'Sinnoh',
+  'Unova',
+  'Kalos',
+  'Alola',
+  'Galar',
+  'Paldea',
+]
 
 export const staticAreas: AreaNode[] = [
   {
@@ -231,3 +254,7 @@ export const staticAreas: AreaNode[] = [
     locationAreaName: 'johto-route-45-area',
   },
 ]
+
+export function getAreasByRegion(region: Region): AreaNode[] {
+  return staticAreas.filter((a) => a.region === region)
+}
