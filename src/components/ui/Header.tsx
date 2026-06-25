@@ -8,6 +8,8 @@ export function Header() {
 
   const caughtCount = bag.length
   const seenCount = seenSpecies.length
+  const uniqueCaughtCount = new Set(bag.map((p) => p.speciesId)).size
+  const hasShinyCharm = uniqueCaughtCount >= 15
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `px-2 sm:px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all duration-300 ${
@@ -32,6 +34,17 @@ export function Header() {
           <span>
             ✔ Caught: <strong className="text-foreground">{caughtCount}</strong>
           </span>
+          {hasShinyCharm && (
+            <>
+              <span className="w-1 h-1 rounded-full bg-accent/40" />
+              <span
+                className="text-amber-400 font-bold flex items-center gap-1 animate-pulse"
+                title="Shiny Charm: Shiny encounter rate is boosted to 1/64!"
+              >
+                ✨ Charm Active
+              </span>
+            </>
+          )}
         </div>
       </div>
 

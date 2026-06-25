@@ -18,6 +18,7 @@ export default function AreaPage() {
   const visitArea = useGameStore((s) => s.visitArea)
   const setActiveEncounter = useGameStore((s) => s.setActiveEncounter)
   const seenSpecies = useCollectionStore((s) => s.seenSpecies)
+  const bag = useCollectionStore((s) => s.bag)
 
   const area = staticAreas.find((a) => a.id === id)
 
@@ -85,8 +86,11 @@ export default function AreaPage() {
     const maxLvl = area.maxLevel
     const randomLevel = Math.floor(Math.random() * (maxLvl - minLvl + 1)) + minLvl
 
-    // 1/4096 chance for Shiny
-    const isShiny = Math.random() < 1 / 4096
+    // 1/256 chance for Shiny (boosted to 1/64 if Shiny Charm is unlocked)
+    const uniqueCaughtCount = new Set(bag.map((p) => p.speciesId)).size
+    const hasShinyCharm = uniqueCaughtCount >= 15
+    const shinyRate = hasShinyCharm ? 1 / 64 : 1 / 256
+    const isShiny = Math.random() < shinyRate
 
     setActiveEncounter({
       speciesId,
