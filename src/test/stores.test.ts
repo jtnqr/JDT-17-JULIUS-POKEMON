@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { idbStorage } from '../lib/idb-storage'
-import { useCollectionStore } from '../stores/collectionStore'
-import { useGameStore } from '../stores/gameStore'
-import { useSettingsStore } from '../stores/settingsStore'
+import { idbStorage } from '@/lib/idb-storage'
+import { useCollectionStore } from '@/stores/collectionStore'
+import { useGameStore } from '@/stores/gameStore'
+import { useSettingsStore } from '@/stores/settingsStore'
 
 describe('idbStorage', () => {
   beforeEach(async () => {
