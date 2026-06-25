@@ -23,11 +23,14 @@ export function PokemonCard({
   isShiny,
   partySlot,
 }: PokemonCardProps) {
+  const cardClassName = `block relative overflow-hidden backdrop-blur-sm rounded-xl p-4 transition-all duration-300 hover:scale-102 group scanlines h-[260px] ${
+    isShiny
+      ? 'bg-gradient-to-br from-amber-950/40 via-surface/80 to-yellow-900/40 border-2 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_0_20px_rgba(245,158,11,0.45)] holographic-card'
+      : 'bg-surface/60 border border-accent/40 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)]'
+  }`
+
   return (
-    <Link
-      to={`/pokemon/${id}`}
-      className="block relative overflow-hidden bg-surface/60 backdrop-blur-sm border border-accent/40 rounded-xl p-4 transition-all duration-300 hover:scale-102 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)] group scanlines h-[260px]"
-    >
+    <Link to={`/pokemon/${id}`} className={cardClassName}>
       {partySlot != null && (
         <div className="absolute top-2 left-2 bg-highlight text-background font-bold text-sm px-2 py-0.5 rounded-full z-10 border border-background">
           Party #{partySlot}
@@ -41,12 +44,34 @@ export function PokemonCard({
 
       <div className="flex flex-col items-center h-full">
         {/* Sprite container - flex growable with shrink protection */}
-        <div className="flex-1 flex items-center justify-center min-h-0">
+        <div className="flex-1 flex items-center justify-center min-h-0 relative">
+          {isShiny && (
+            <>
+              <span
+                className="absolute top-2 left-6 text-amber-300 text-sm sparkle-animation select-none"
+                style={{ animationDelay: '0.2s' }}
+              >
+                ✨
+              </span>
+              <span
+                className="absolute bottom-4 right-8 text-yellow-200 text-xs sparkle-animation select-none"
+                style={{ animationDelay: '0.7s' }}
+              >
+                ✨
+              </span>
+              <span
+                className="absolute top-8 right-4 text-amber-200 text-sm sparkle-animation select-none"
+                style={{ animationDelay: '1.2s' }}
+              >
+                ✨
+              </span>
+            </>
+          )}
           <img
             src={sprite}
             alt={nickname || name}
             loading="lazy"
-            className="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110"
+            className="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110 z-10"
             width={96}
             height={96}
           />
