@@ -1,19 +1,60 @@
 import { ArrowLeft, Volume2 } from 'lucide-react'
+import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
 import { StatBar } from '@/components/ui/StatBar'
 import { TypeBadge } from '@/components/ui/TypeBadge'
-import { usePokemon, usePokemonSpecies } from '@/hooks/usePokemon'
+import { useEvolutionChain, usePokemon, usePokemonSpecies } from '@/hooks/usePokemon'
 import { useSettingsStore } from '@/stores/settingsStore'
 
 export default function PokemonDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { soundEnabled } = useSettingsStore()
+  const soundEnabled = useSettingsStore((s) => s.soundEnabled)
 
-  const { data: pokemon, isLoading: isPkLoading } = usePokemon(id || '')
-  const { data: species, isLoading: isSpLoading } = usePokemonSpecies(id || '')
+  const {
+    data: pokemon,
+    isLoading: isPkLoading,
+    isError: isPkError,
+    refetch: refetchPk,
+  } = usePokemon(id || '')
+  const {
+    data: species,
+    isLoading: isSpLoading,
+    isError: isSpError,
+    refetch: refetchSp,
+  } = usePokemonSpecies(id || '')
 
-  if (isPkLoading || isSpLoading) {
+  const evoUrl = species?.evolution_chain?.url
+  const {
+    data: evoChain,
+    isLoading: isEvoLoading,
+    isError: isEvoError,
+    refetch: refetchEvo,
+  } = useEvolutionChain(evoUrl)
+
+  const isError = isPkError || isSpError || isEvoError
+
+  const handleRetry = () => {
+    if (isPkError) refetchPk()
+    if (isSpError) refetchSp()
+    if (isEvoError) refetchEvo()
+  }
+
+  // SEO updates
+  useEffect(() => {
+    if (pokemon) {
+      document.title = `Pokédex - ${pokemon.name.toUpperCase()}`
+      const meta = document.querySelector('meta[name="description"]')
+      if (meta) {
+        meta.setAttribute(
+          'content',
+          `Detailed information, stats, and evolution for ${pokemon.name}.`
+        )
+      }
+    }
+  }, [pokemon])
+
+  if (isPkLoading || isSpLoading || (evoUrl && isEvoLoading)) {
     return (
       <div className="min-h-[calc(100vh-4rem)] p-6 flex flex-col items-center justify-center">
         <SkeletonLoader className="h-64 max-w-md w-full" />
@@ -21,10 +62,32 @@ export default function PokemonDetailPage() {
     )
   }
 
+  if (isError) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] p-6 flex items-center justify-center scanlines text-text font-mono">
+        <div className="max-w-md w-full border border-accent bg-surface/85 backdrop-blur-md rounded-xl p-6 shadow-2xl text-center">
+          <h1 className="text-xl font-heading font-bold text-highlight mb-4 uppercase">
+            Data Stream Broken
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            Failed to retrieve Pokémon parameters or evolution details.
+          </p>
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="w-full py-2 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-lg text-sm transition-all cursor-pointer"
+          >
+            RE-INITIATE LINK
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (!pokemon) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] p-6 text-center text-muted">
-        Pokemon entry not found.
+      <div className="min-h-[calc(100vh-4rem)] p-6 text-center text-muted font-mono">
+        Pokémon entry not found.
       </div>
     )
   }
@@ -61,9 +124,9 @@ export default function PokemonDetailPage() {
             alt={pokemon.name}
             className="w-48 h-48 object-contain scale-105"
           />
-          <h2 className="text-2xl font-black text-foreground capitalize mt-4 font-heading">
+          <h1 className="text-2xl font-black text-foreground capitalize mt-4 font-heading">
             {pokemon.name}
-          </h2>
+          </h1>
           <span className="text-xs text-accent font-bold mt-1">
             NO. {String(pokemon.id).padStart(3, '0')}
           </span>
@@ -89,18 +152,18 @@ export default function PokemonDetailPage() {
         {/* Right Side: Stats & Entry Text */}
         <div className="flex flex-col gap-6">
           <div className="bg-surface/40 border border-accent/20 rounded-2xl p-6">
-            <h3 className="text-xs font-bold text-accent uppercase tracking-widest mb-3 font-heading">
+            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-3 font-heading">
               Database Entry
-            </h3>
+            </h2>
             <p className="text-sm leading-relaxed text-foreground/80 font-mono italic">
               {flavorText}
             </p>
           </div>
 
           <div className="bg-surface/40 border border-accent/20 rounded-2xl p-6">
-            <h3 className="text-xs font-bold text-accent uppercase tracking-widest mb-4 font-heading">
+            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-4 font-heading">
               Base Statistics
-            </h3>
+            </h2>
             {pokemon.stats.map((s) => (
               <StatBar
                 key={s.stat.name}
@@ -111,6 +174,49 @@ export default function PokemonDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Evolution Chain Section */}
+      {evoChain && evoChain.length > 1 && (
+        <div className="mt-8 bg-surface/40 border border-accent/20 rounded-2xl p-6">
+          <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-4 font-heading text-center md:text-left">
+            Evolution Chain
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 py-2">
+            {evoChain.map((stage, idx) => {
+              const isCurrent =
+                String(stage.id) === id || stage.name.toLowerCase() === pokemon.name.toLowerCase()
+              return (
+                <div key={stage.id} className="flex items-center gap-4 md:gap-8">
+                  {idx > 0 && (
+                    <span className="text-accent font-mono text-lg select-none animate-pulse">
+                      ➔
+                    </span>
+                  )}
+                  <Link
+                    to={`/pokemon/${stage.id}`}
+                    className={`flex flex-col items-center p-3 rounded-xl border transition-all ${
+                      isCurrent
+                        ? 'bg-accent/20 border-highlight text-highlight font-black scale-105 shadow-md shadow-accent/10'
+                        : 'border-accent/10 hover:border-accent/40 bg-surface/30 hover:bg-surface/50 text-foreground/80 hover:text-foreground cursor-pointer'
+                    }`}
+                  >
+                    <img
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stage.id}.png`}
+                      alt={stage.name}
+                      className="w-16 h-16 object-contain"
+                      loading="lazy"
+                    />
+                    <span className="text-xs capitalize font-heading mt-1">{stage.name}</span>
+                    <span className="text-[9px] font-mono text-muted-foreground mt-0.5">
+                      #{String(stage.id).padStart(3, '0')}
+                    </span>
+                  </Link>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

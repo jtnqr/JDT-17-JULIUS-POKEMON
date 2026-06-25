@@ -14,15 +14,19 @@ const queryClient = new QueryClient({
   },
 })
 
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary.tsx'
+
 const container = document.getElementById('root')
 if (container) {
   createRoot(container).render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </QueryClientProvider>
+      <ErrorBoundary fullScreen={true}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ErrorBoundary>
     </StrictMode>
   )
 }

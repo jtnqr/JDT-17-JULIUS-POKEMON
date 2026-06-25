@@ -1,8 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCollectionStore } from '@/stores/collectionStore'
 
 export default function PartyPage() {
-  const { bag, addToParty, removeFromParty } = useCollectionStore()
+  const bag = useCollectionStore((s) => s.bag)
+  const addToParty = useCollectionStore((s) => s.addToParty)
+  const removeFromParty = useCollectionStore((s) => s.removeFromParty)
+
+  useEffect(() => {
+    document.title = 'Pokédex - Party'
+    const meta = document.querySelector('meta[name="description"]')
+    if (meta) {
+      meta.setAttribute('content', 'Manage your active party of up to 6 Pokémon.')
+    }
+  }, [])
 
   // Derived party array of length 6
   const partySlots = Array.from({ length: 6 }, (_, i) => {
@@ -27,9 +37,9 @@ export default function PartyPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] p-6 scanlines">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-extrabold tracking-wider text-highlight mb-2 font-heading">
+        <h1 className="text-3xl font-extrabold tracking-wider text-highlight mb-2 font-heading">
           ACTIVE PARTY
-        </h2>
+        </h1>
         <p className="text-muted text-sm mb-8">
           Maintain up to 6 active Pokémon. Select a slot to choose from bag.
         </p>
@@ -96,9 +106,9 @@ export default function PartyPage() {
         {/* Drawer selecting bag pokemon if slot chosen */}
         {selectedSlotIndex !== null && (
           <div className="bg-surface border-2 border-highlight rounded-2xl p-6 shadow-xl animate-[pulse_3s_infinite]">
-            <h3 className="text-sm font-bold text-highlight uppercase mb-4">
+            <h2 className="text-sm font-bold text-highlight uppercase mb-4">
               Choose Pokémon for Slot #{selectedSlotIndex + 1}
-            </h3>
+            </h2>
             {availableBag.length === 0 ? (
               <p className="text-muted text-xs">
                 No available Pokémon in your Bag. Catch more or clear other slots.

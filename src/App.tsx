@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { Header } from '@/components/ui/Header'
 
 // Lazy loaded page components for optimal bundle performance
@@ -27,13 +28,62 @@ function App() {
       <main className="flex-1 flex flex-col">
         <Suspense fallback={<RouteSpinner />}>
           <Routes>
-            <Route path="/" element={<MapPage />} />
-            <Route path="/area/:id" element={<AreaPage />} />
-            <Route path="/encounter" element={<EncounterPage />} />
-            <Route path="/bag" element={<BagPage />} />
-            <Route path="/party" element={<PartyPage />} />
-            <Route path="/pokemon/:id" element={<PokemonDetailPage />} />
-            <Route path="/pokedex" element={<PokedexPage />} />
+            <Route
+              path="/"
+              element={
+                <ErrorBoundary>
+                  <MapPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/area/:id"
+              element={
+                <ErrorBoundary>
+                  <AreaPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/encounter"
+              element={
+                <ErrorBoundary>
+                  <EncounterPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/bag"
+              element={
+                <ErrorBoundary>
+                  <BagPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/party"
+              element={
+                <ErrorBoundary>
+                  <PartyPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/pokemon/:id"
+              element={
+                <ErrorBoundary>
+                  <PokemonDetailPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/pokedex"
+              element={
+                <ErrorBoundary>
+                  <PokedexPage />
+                </ErrorBoundary>
+              }
+            />
           </Routes>
         </Suspense>
       </main>

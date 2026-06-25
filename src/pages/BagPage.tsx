@@ -1,38 +1,38 @@
-import { useQueries } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PokemonCard } from '@/components/ui/PokemonCard'
+import { useBagDetails } from '@/hooks/usePokemon'
 import { useCollectionStore } from '@/stores/collectionStore'
 
-interface PokemonData {
-  id: number
-  name: string
-  types: Array<{
-    type: { name: string }
-  }>
-}
-
 export default function BagPage() {
-  const { bag, releasePokemon } = useCollectionStore()
+  const bag = useCollectionStore((s) => s.bag)
+  const releasePokemon = useCollectionStore((s) => s.releasePokemon)
   const [filterType, setFilterType] = useState('all')
 
-  // Fetch full details of bag pokemon to display types
-  const queries = useQueries({
-    queries: bag.map((p) => ({
-      queryKey: ['pokemon', p.speciesId],
-      queryFn: async (): Promise<PokemonData> => {
-        const res = await fetch(`https://pokeapi.co/v2/pokemon/${p.speciesId}`)
-        if (!res.ok) throw new Error('Failed to fetch pokemon details')
-        return res.json()
-      },
-      staleTime: 1000 * 60 * 10,
-    })),
-  })
+  useEffect(() => {
+    document.title = 'Pokédex - Bag'
+    const meta = document.querySelector('meta[name="description"]')
+    if (meta) {
+      meta.setAttribute('content', 'View and manage your caught Pokémon collection.')
+    }
+  }, [])
+
+  const speciesIds = bag.map((p) => p.speciesId)
+  const queries = useBagDetails(speciesIds)
 
   const isLoading = queries.some((q) => q.isLoading)
+  const isError = queries.some((q) => q.isError)
 
   const handleRelease = (uid: string) => {
     if (window.confirm('Are you sure you want to release this Pokémon back into the wild?')) {
       releasePokemon(uid)
+    }
+  }
+
+  const handleRetry = () => {
+    for (const q of queries) {
+      if (q.isError) {
+        q.refetch()
+      }
     }
   }
 
@@ -51,14 +51,36 @@ export default function BagPage() {
     return getPokemonTypes(p.speciesId).includes(filterType)
   })
 
+  if (isError) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] p-6 flex items-center justify-center scanlines text-text font-mono">
+        <div className="max-w-md w-full border border-accent bg-surface/80 backdrop-blur-md rounded-xl p-6 shadow-2xl text-center">
+          <h1 className="text-xl font-heading font-bold text-highlight mb-4 uppercase">
+            Connection Interrupted
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            Failed to retrieve bag contents from the database. Please try again.
+          </p>
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="w-full py-2 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-lg text-sm transition-all cursor-pointer"
+          >
+            RETRY TRANSMISSION
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-[calc(100vh-4rem)] p-6 scanlines">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h2 className="text-3xl font-extrabold tracking-wider text-highlight font-heading">
+            <h1 className="text-3xl font-extrabold tracking-wider text-highlight font-heading">
               YOUR BAG
-            </h2>
+            </h1>
             <p className="text-muted text-sm mt-1">
               Management collection, click to view stats, long press / click release
             </p>
