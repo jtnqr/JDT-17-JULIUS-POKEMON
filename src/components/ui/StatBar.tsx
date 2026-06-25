@@ -12,7 +12,7 @@ export function StatBar({
   return (
     <div className="mb-3">
       <div className="flex justify-between text-sm mb-1">
-        <span className="font-semibold text-muted uppercase tracking-wider text-xs">{label}</span>
+        <span className="font-semibold text-muted uppercase tracking-wider text-sm">{label}</span>
         <span className="font-bold text-foreground font-mono">{value}</span>
       </div>
       <div className="h-3 w-full bg-background/80 rounded-full overflow-hidden border border-accent/20">

@@ -24,7 +24,7 @@ export function Header() {
             BRONZE POKÉDEX
           </h1>
         </Link>
-        <div className="hidden sm:flex items-center gap-3 text-xs bg-surface/50 px-3 py-1.5 rounded-full border border-accent/20 text-muted">
+        <div className="hidden sm:flex items-center gap-3 text-sm bg-surface/50 px-3 py-1.5 rounded-full border border-accent/20 text-muted">
           <span>
             👁 Seen: <strong className="text-foreground">{seenCount}</strong>
           </span>

@@ -32,8 +32,8 @@ export function BallPicker({ onSelect, disabled }: BallPickerProps) {
               type={ball.type}
               className="w-10 h-10 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110"
             />
-            <span className="text-xs font-bold text-foreground mt-2">{ball.name}</span>
-            <span className="text-[10px] text-highlight font-mono mt-0.5">{ball.rate}</span>
+            <span className="text-sm font-bold text-foreground mt-2">{ball.name}</span>
+            <span className="text-sm text-highlight font-mono mt-0.5">{ball.rate}</span>
           </button>
         ))}
       </div>

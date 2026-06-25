@@ -1,5 +1,6 @@
 import { AlertCircle, ArrowLeft, Compass } from 'lucide-react'
 import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
 import { type PokemonEncounter, useLocationArea } from '@/hooks/useEncounter'
@@ -34,7 +35,7 @@ export default function AreaPage() {
       <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center text-center p-6 scanlines">
         <AlertCircle className="text-red-500 w-16 h-16 mb-4" />
         <h2 className="text-2xl font-bold text-foreground mb-2">Area Not Found</h2>
-        <Link to="/" className="text-accent underline">
+        <Link to="/" className="text-accent underline min-h-[44px] flex items-center px-4">
           Back to Map
         </Link>
       </div>
@@ -103,21 +104,29 @@ export default function AreaPage() {
     <div
       className={`min-h-[calc(100vh-4rem)] flex flex-col justify-between scanlines overflow-hidden ${bgStyles}`}
     >
+      <Helmet>
+        <title>{`${area.name} — Pokédex Bronze`}</title>
+        <meta
+          name="description"
+          content={`Encounter and catch Pokémon in ${area.name}. See which species appear by time of day.`}
+        />
+      </Helmet>
+
       {/* Top Overlay Bar */}
       <div className="bg-background/80 border-b border-accent/20 p-4 flex items-center justify-between z-10">
         <Link
           to="/"
-          className="flex items-center gap-2 text-muted hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-muted hover:text-foreground transition-colors min-h-[44px] px-2"
           aria-label="Back to Map"
         >
           <ArrowLeft size={18} />
-          <span className="font-semibold text-xs uppercase tracking-wider">Map</span>
+          <span className="font-semibold text-sm uppercase tracking-wider">Map</span>
         </Link>
         <div className="flex flex-col items-end">
           <h2 className="text-lg font-black tracking-wider text-highlight capitalize">
             {area.name}
           </h2>
-          <span className="text-[10px] text-muted uppercase tracking-widest">
+          <span className="text-sm text-muted uppercase tracking-widest">
             {area.region} Region • {timeOfDay}
           </span>
         </div>
@@ -174,7 +183,7 @@ export default function AreaPage() {
                           isSeen ? 'brightness-100' : 'brightness-0'
                         }`}
                       />
-                      <span className="text-[9px] text-muted capitalize truncate max-w-[70px]">
+                      <span className="text-sm text-muted capitalize truncate max-w-[70px]">
                         {e.pokemon.name}
                       </span>
                     </button>

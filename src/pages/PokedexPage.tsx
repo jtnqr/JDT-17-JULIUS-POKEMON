@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { usePokedexList } from '@/hooks/usePokemon'
 import { useCollectionStore } from '@/stores/collectionStore'
 
@@ -6,17 +7,6 @@ export default function PokedexPage() {
   const seenSpecies = useCollectionStore((s) => s.seenSpecies)
   const bag = useCollectionStore((s) => s.bag)
   const [searchQuery, setSearchQuery] = useState('')
-
-  useEffect(() => {
-    document.title = 'Pokédex - Index'
-    const meta = document.querySelector('meta[name="description"]')
-    if (meta) {
-      meta.setAttribute(
-        'content',
-        'Official records of encountered and catalogued Pokémon specimens.'
-      )
-    }
-  }, [])
 
   // Fetch National Pokedex Index (#1 - #151 for Kanto focus/simplicity)
   const { data: dexList, isLoading, isError, refetch } = usePokedexList()
@@ -34,6 +24,13 @@ export default function PokedexPage() {
   if (isError) {
     return (
       <div className="min-h-[calc(100vh-4rem)] p-6 flex items-center justify-center scanlines text-text font-mono">
+        <Helmet>
+          <title>National Pokédex — Pokédex Bronze</title>
+          <meta
+            name="description"
+            content="Track seen and caught Pokémon across all 151 species."
+          />
+        </Helmet>
         <div className="max-w-md w-full border border-accent bg-surface/85 backdrop-blur-md rounded-xl p-6 shadow-2xl text-center">
           <h1 className="text-xl font-heading font-bold text-highlight mb-4 uppercase">
             Database Offline
@@ -44,7 +41,7 @@ export default function PokedexPage() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="w-full py-2 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-lg text-sm transition-all cursor-pointer"
+            className="w-full py-3 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-lg text-sm transition-all cursor-pointer min-h-[44px]"
           >
             RETRY CONNECTION
           </button>
@@ -55,16 +52,19 @@ export default function PokedexPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] p-6 scanlines max-w-5xl mx-auto">
+      <Helmet>
+        <title>National Pokédex — Pokédex Bronze</title>
+        <meta name="description" content="Track seen and caught Pokémon across all 151 species." />
+      </Helmet>
+
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold tracking-wider text-highlight font-heading">
           NATIONAL INDEX
         </h1>
-        <p className="text-muted text-sm mt-1">
-          Official records of encountered and catalogued specimens.
-        </p>
+        <p className="text-muted text-sm mt-1">Official records of catalogued specimens.</p>
 
         {/* Simple Progress Indicators */}
-        <div className="mt-4 flex items-center gap-6 text-xs text-muted">
+        <div className="mt-4 flex items-center gap-6 text-sm text-muted">
           <span>
             Catalogued: <strong className="text-foreground">{totalCaught} / 151</strong>
           </span>
@@ -79,12 +79,14 @@ export default function PokedexPage() {
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full max-w-md px-4 py-2 bg-surface border border-accent/40 rounded-xl text-foreground text-sm focus:outline-none mb-6 font-mono"
+        className="w-full max-w-md px-4 py-3 bg-surface border border-accent/40 rounded-xl text-foreground text-sm focus:outline-none mb-6 font-mono min-h-[44px]"
         placeholder="Search by name or number..."
       />
 
       {isLoading ? (
-        <div className="text-center text-muted font-mono animate-pulse">Decoding database...</div>
+        <div className="text-center text-muted font-mono animate-pulse text-sm">
+          Decoding database...
+        </div>
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-4">
           {filteredDex.map((p) => {
@@ -102,7 +104,7 @@ export default function PokedexPage() {
                       : 'bg-zinc-950/40 border-accent/10 opacity-30'
                 }`}
               >
-                <span className="text-[10px] font-mono text-muted mb-1">
+                <span className="text-sm font-mono text-muted mb-1">
                   #{String(p.id).padStart(3, '0')}
                 </span>
 
@@ -113,8 +115,10 @@ export default function PokedexPage() {
                       alt={p.name}
                       className={`w-12 h-12 object-contain ${caught ? '' : 'brightness-0 opacity-40'}`}
                       loading="lazy"
+                      width={48}
+                      height={48}
                     />
-                    <span className="text-[11px] font-bold text-foreground capitalize mt-1 truncate max-w-full font-heading">
+                    <span className="text-sm font-bold text-foreground capitalize mt-1 truncate max-w-full font-heading">
                       {p.name}
                     </span>
                   </>
@@ -123,7 +127,7 @@ export default function PokedexPage() {
                     <div className="w-12 h-12 flex items-center justify-center text-muted text-lg font-black font-mono">
                       ?
                     </div>
-                    <span className="text-[11px] font-bold text-muted mt-1">???</span>
+                    <span className="text-sm font-bold text-muted mt-1">???</span>
                   </>
                 )}
               </div>

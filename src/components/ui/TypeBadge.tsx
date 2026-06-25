@@ -24,7 +24,7 @@ export function TypeBadge({ type }: { type: string }) {
   const colorClass = TYPE_COLORS[lowerType] || 'bg-stone-600 text-stone-100'
   return (
     <span
-      className={`px-2 py-0.5 text-xs font-semibold rounded-md border border-white/10 uppercase tracking-wider ${colorClass}`}
+      className={`px-2 py-0.5 text-sm font-semibold rounded-md border border-white/10 uppercase tracking-wider ${colorClass}`}
     >
       {type}
     </span>

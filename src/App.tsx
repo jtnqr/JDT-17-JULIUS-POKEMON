@@ -15,7 +15,7 @@ const PokedexPage = React.lazy(() => import('./pages/PokedexPage'))
 // Per-route fallback fallback spinner
 function RouteSpinner() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-background text-accent font-mono text-xs animate-pulse">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-background text-accent font-mono text-sm animate-pulse">
       TRANSMITTING DYNAMICS...
     </div>
   )

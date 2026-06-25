@@ -29,12 +29,12 @@ export function PokemonCard({
       className="block relative overflow-hidden bg-surface/60 backdrop-blur-sm border border-accent/40 rounded-xl p-4 transition-all duration-300 hover:scale-102 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)] group scanlines"
     >
       {partySlot != null && (
-        <div className="absolute top-2 left-2 bg-highlight text-background font-bold text-xs px-2 py-0.5 rounded-full z-10 border border-background">
+        <div className="absolute top-2 left-2 bg-highlight text-background font-bold text-sm px-2 py-0.5 rounded-full z-10 border border-background">
           Party #{partySlot}
         </div>
       )}
       {isShiny && (
-        <div className="absolute top-2 right-2 text-highlight text-xs font-bold animate-pulse z-10">
+        <div className="absolute top-2 right-2 text-highlight text-sm font-bold animate-pulse z-10">
           ✨ SHINY
         </div>
       )}
@@ -45,16 +45,18 @@ export function PokemonCard({
           alt={nickname || name}
           loading="lazy"
           className="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110"
+          width={96}
+          height={96}
         />
         <h3 className="text-lg font-bold text-foreground capitalize mt-2 truncate max-w-full">
           {nickname || name}
         </h3>
         {nickname && (
-          <span className="text-xs text-muted font-mono capitalize truncate max-w-full">
+          <span className="text-sm text-muted font-mono capitalize truncate max-w-full">
             ({name})
           </span>
         )}
-        <span className="text-xs text-accent font-semibold mt-1">
+        <span className="text-sm text-accent font-semibold mt-1">
           #{String(id).padStart(3, '0')}
         </span>
 
@@ -65,7 +67,7 @@ export function PokemonCard({
         </div>
 
         {ballUsed && (
-          <div className="flex items-center gap-1 mt-3 text-xs text-muted">
+          <div className="flex items-center gap-1 mt-3 text-sm text-muted">
             <BallIcon type={ballUsed} className="w-4 h-4" />
             <span>Caught</span>
           </div>

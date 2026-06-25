@@ -49,12 +49,12 @@ export class ErrorBoundary extends Component<Props, State> {
               <h2 className="text-xl font-heading font-bold text-highlight tracking-wider uppercase animate-pulse">
                 ⚠ System Failure
               </h2>
-              <p className="text-xs text-muted-foreground mt-1">ERROR CODE: DYNAMICS_ERR_01</p>
+              <p className="text-sm text-muted-foreground mt-1">ERROR CODE: DYNAMICS_ERR_01</p>
             </div>
 
             {/* Error Message */}
             <div className="bg-black/40 border border-destructive/20 rounded p-4 mb-6 max-h-40 overflow-y-auto">
-              <p className="text-xs text-destructive font-mono break-all whitespace-pre-wrap">
+              <p className="text-sm text-destructive font-mono break-all whitespace-pre-wrap">
                 {this.state.error?.toString() || 'An unexpected runtime error occurred.'}
               </p>
             </div>

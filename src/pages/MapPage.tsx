@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { staticAreas } from '@/lib/areaMap'
 import { useCollectionStore } from '@/stores/collectionStore'
@@ -19,6 +20,14 @@ export default function MapPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] p-6 flex flex-col items-center scanlines">
+      <Helmet>
+        <title>Pokédex Bronze — World Map</title>
+        <meta
+          name="description"
+          content="Explore Pokémon routes across all regions and encounter wild Pokémon."
+        />
+      </Helmet>
+
       <div className="max-w-4xl w-full text-center mb-6">
         <h2 className="text-3xl font-extrabold tracking-wider text-highlight mb-2">WORLD MAP</h2>
         <p className="text-muted text-sm">
@@ -67,7 +76,7 @@ export default function MapPage() {
               onClick={() => isUnlocked && navigate(`/area/${area.id}`)}
               disabled={!isUnlocked}
               style={{ left: `${area.coords.x}%`, top: `${area.coords.y}%` }}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group transition-all duration-300 ${
+              className={`absolute -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group transition-all duration-300 p-2 min-w-[44px] min-h-[44px] justify-center ${
                 isUnlocked ? 'cursor-pointer hover:scale-110' : 'cursor-not-allowed opacity-40'
               }`}
               type="button"
@@ -89,14 +98,14 @@ export default function MapPage() {
                   <span className="absolute -inset-2 rounded-full border border-highlight animate-ping pointer-events-none" />
                 )}
                 {uniqueCount > 0 && (
-                  <div className="absolute -top-3 -right-3 bg-highlight text-background font-black text-[9px] w-4 h-4 rounded-full border border-background flex items-center justify-center">
+                  <div className="absolute -top-4 -right-4 bg-highlight text-background font-black text-sm w-7 h-7 rounded-full border border-background flex items-center justify-center">
                     {uniqueCount}
                   </div>
                 )}
               </div>
 
               {/* Tooltip Label */}
-              <div className="mt-1 bg-background/90 text-[10px] font-bold text-foreground px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity duration-300 shadow-md">
+              <div className="mt-1 bg-background/90 text-sm font-bold text-foreground px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity duration-300 shadow-md">
                 {area.name}
               </div>
             </button>

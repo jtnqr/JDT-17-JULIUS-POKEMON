@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { BallPicker } from '@/components/encounter/BallPicker'
 import { BattleHUD } from '@/components/encounter/BattleHUD'
@@ -78,10 +79,17 @@ export default function EncounterPage() {
   if (!activeEncounter) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-6 scanlines">
+        <Helmet>
+          <title>Wild Encounter — Pokédex Bronze</title>
+          <meta
+            name="description"
+            content="A wild Pokémon appeared! Throw a Poké Ball to catch it."
+          />
+        </Helmet>
         <p className="text-muted text-sm mb-4">No active wild encounter.</p>
         <button
           onClick={() => navigate('/')}
-          className="px-4 py-2 bg-accent text-background font-bold rounded-lg cursor-pointer hover:bg-highlight hover:scale-102 transition-all duration-300"
+          className="px-4 py-2.5 bg-accent text-background font-bold rounded-lg cursor-pointer hover:bg-highlight hover:scale-102 transition-all duration-300 min-h-[44px]"
           type="button"
         >
           Return to Map
@@ -171,15 +179,23 @@ export default function EncounterPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-between p-6 bg-radial-gradient(from-stone-900_to-background) scanlines relative">
+      <Helmet>
+        <title>Wild Encounter — Pokédex Bronze</title>
+        <meta
+          name="description"
+          content="A wild Pokémon appeared! Throw a Poké Ball to catch it."
+        />
+      </Helmet>
+
       {/* Top action bar */}
       <div className="flex justify-between items-center w-full z-10">
         <button
           onClick={handleRun}
-          className="flex items-center gap-2 px-3 py-1.5 bg-surface/60 border border-accent/20 rounded-lg text-muted hover:text-foreground hover:border-accent/65 hover:bg-surface/80 transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2.5 bg-surface/60 border border-accent/20 rounded-lg text-muted hover:text-foreground hover:border-accent/65 hover:bg-surface/80 transition-all cursor-pointer min-h-[44px]"
           type="button"
         >
           <ArrowLeft size={16} />
-          <span className="text-xs font-semibold uppercase tracking-wider">Run</span>
+          <span className="text-sm font-semibold uppercase tracking-wider">Run</span>
         </button>
       </div>
 
@@ -202,6 +218,8 @@ export default function EncounterPage() {
               alt="wild-pokemon"
               className="w-40 h-40 object-contain animate-[pulse_3s_infinite]"
               loading="lazy"
+              width={160}
+              height={160}
             />
           )}
 
@@ -214,7 +232,7 @@ export default function EncounterPage() {
           {catchState === 'shaking' && (
             <div className="animate-[bounce_0.4s_infinite] scale-150 relative">
               <BallIcon type={selectedBall} className="w-12 h-12 animate-pulse" />
-              <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-mono text-muted">
+              <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-mono text-muted">
                 {'.'.repeat(shakeCount)}
               </span>
             </div>
@@ -231,7 +249,7 @@ export default function EncounterPage() {
               <span className="text-sm font-bold text-red-400 block mb-2">Broke free!</span>
               <button
                 onClick={() => setCatchState('idle')}
-                className="px-4 py-2 bg-accent text-background font-bold rounded-lg border border-highlight/50 cursor-pointer hover:bg-highlight hover:scale-102 transition-all duration-300"
+                className="px-4 py-2.5 bg-accent text-background font-bold rounded-lg border border-highlight/50 cursor-pointer hover:bg-highlight hover:scale-102 transition-all duration-300 min-h-[44px]"
                 type="button"
               >
                 Try Again

@@ -25,7 +25,7 @@ export function NicknameModal({ speciesName, onConfirm }: NicknameModalProps) {
         <h3 className="text-lg font-black tracking-wider text-highlight text-center mb-4">
           GOTCHA!
         </h3>
-        <p className="text-xs text-muted mb-4 text-center">
+        <p className="text-sm text-muted mb-4 text-center">
           Give your newly caught Pokémon a nickname:
         </p>
 

@@ -78,7 +78,7 @@ describe('BagPage', () => {
       expect(screen.getByText('Pikachu')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('RELEASE')).toBeInTheDocument()
+    expect(screen.getByText('RELEASE POKÉMON')).toBeInTheDocument()
 
     // Mock window.confirm to return true for release
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)

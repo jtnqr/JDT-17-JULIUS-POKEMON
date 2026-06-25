@@ -16,14 +16,14 @@ export function BattleHUD({
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-black tracking-wider capitalize text-highlight">{name}</h3>
-          {isShiny && <span className="text-xs text-highlight font-bold animate-bounce">✨</span>}
+          {isShiny && <span className="text-sm text-highlight font-bold animate-bounce">✨</span>}
         </div>
         <span className="font-mono text-sm text-muted">Lvl {level}</span>
       </div>
 
       {/* Visual Dummy HP bar */}
       <div className="mb-2">
-        <div className="flex justify-between items-center text-[10px] text-muted mb-0.5">
+        <div className="flex justify-between items-center text-sm text-muted mb-0.5">
           <span>HP</span>
           <span className="font-mono">100%</span>
         </div>

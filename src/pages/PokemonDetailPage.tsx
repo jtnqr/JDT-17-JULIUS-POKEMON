@@ -1,15 +1,17 @@
 import { ArrowLeft, Volume2 } from 'lucide-react'
-import { useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link, useParams } from 'react-router-dom'
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
 import { StatBar } from '@/components/ui/StatBar'
 import { TypeBadge } from '@/components/ui/TypeBadge'
 import { useEvolutionChain, usePokemon, usePokemonSpecies } from '@/hooks/usePokemon'
+import { useCollectionStore } from '@/stores/collectionStore'
 import { useSettingsStore } from '@/stores/settingsStore'
 
 export default function PokemonDetailPage() {
   const { id } = useParams<{ id: string }>()
   const soundEnabled = useSettingsStore((s) => s.soundEnabled)
+  const bag = useCollectionStore((s) => s.bag)
 
   const {
     data: pokemon,
@@ -40,20 +42,6 @@ export default function PokemonDetailPage() {
     if (isEvoError) refetchEvo()
   }
 
-  // SEO updates
-  useEffect(() => {
-    if (pokemon) {
-      document.title = `Pokédex - ${pokemon.name.toUpperCase()}`
-      const meta = document.querySelector('meta[name="description"]')
-      if (meta) {
-        meta.setAttribute(
-          'content',
-          `Detailed information, stats, and evolution for ${pokemon.name}.`
-        )
-      }
-    }
-  }, [pokemon])
-
   if (isPkLoading || isSpLoading || (evoUrl && isEvoLoading)) {
     return (
       <div className="min-h-[calc(100vh-4rem)] p-6 flex flex-col items-center justify-center">
@@ -65,6 +53,13 @@ export default function PokemonDetailPage() {
   if (isError) {
     return (
       <div className="min-h-[calc(100vh-4rem)] p-6 flex items-center justify-center scanlines text-text font-mono">
+        <Helmet>
+          <title>Data Stream Broken — Pokédex Bronze</title>
+          <meta
+            name="description"
+            content="Failed to retrieve Pokémon parameters or evolution details."
+          />
+        </Helmet>
         <div className="max-w-md w-full border border-accent bg-surface/85 backdrop-blur-md rounded-xl p-6 shadow-2xl text-center">
           <h1 className="text-xl font-heading font-bold text-highlight mb-4 uppercase">
             Data Stream Broken
@@ -75,7 +70,7 @@ export default function PokemonDetailPage() {
           <button
             type="button"
             onClick={handleRetry}
-            className="w-full py-2 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-lg text-sm transition-all cursor-pointer"
+            className="w-full py-3 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-lg text-sm transition-all cursor-pointer min-h-[44px]"
           >
             RE-INITIATE LINK
           </button>
@@ -86,7 +81,7 @@ export default function PokemonDetailPage() {
 
   if (!pokemon) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] p-6 text-center text-muted font-mono">
+      <div className="min-h-[calc(100vh-4rem)] p-6 text-center text-muted font-mono text-sm">
         Pokémon entry not found.
       </div>
     )
@@ -106,14 +101,28 @@ export default function PokemonDetailPage() {
       ?.find((e) => e.language.name === 'en')
       ?.flavor_text.replace(/[\n\f]/g, ' ') || 'No entry details available.'
 
+  // Dynamic SEO metadata
+  const caughtPokemon = bag.find((p) => String(p.speciesId) === id)
+  const speciesName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)
+  const titleText =
+    caughtPokemon && caughtPokemon.nickname !== pokemon.name
+      ? `${caughtPokemon.nickname} (${speciesName}) — Pokédex Bronze`
+      : `${speciesName} — Pokédex Bronze`
+  const descriptionText = `Pokédex entry for ${speciesName}: stats, moves, evolution chain, and more.`
+
   return (
     <div className="min-h-[calc(100vh-4rem)] p-6 scanlines max-w-4xl mx-auto">
+      <Helmet>
+        <title>{titleText}</title>
+        <meta name="description" content={descriptionText} />
+      </Helmet>
+
       <Link
         to="/bag"
-        className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors mb-6 cursor-pointer"
+        className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors mb-6 cursor-pointer min-h-[44px] px-2"
       >
         <ArrowLeft size={16} />
-        <span className="text-xs font-bold uppercase tracking-wider">Back to Bag</span>
+        <span className="text-sm font-bold uppercase tracking-wider">Back to Bag</span>
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -123,11 +132,13 @@ export default function PokemonDetailPage() {
             src={pokemon.sprites.front_default}
             alt={pokemon.name}
             className="w-48 h-48 object-contain scale-105"
+            width={192}
+            height={192}
           />
           <h1 className="text-2xl font-black text-foreground capitalize mt-4 font-heading">
             {pokemon.name}
           </h1>
-          <span className="text-xs text-accent font-bold mt-1">
+          <span className="text-sm text-accent font-bold mt-1">
             NO. {String(pokemon.id).padStart(3, '0')}
           </span>
 
@@ -140,7 +151,7 @@ export default function PokemonDetailPage() {
           {pokemon.cries?.latest && (
             <button
               onClick={handlePlayCry}
-              className="mt-6 flex items-center gap-2 px-4 py-2 bg-accent/20 border border-accent/50 hover:bg-accent hover:text-background text-foreground text-xs font-black rounded-xl transition-all cursor-pointer"
+              className="mt-6 flex items-center gap-2 px-4 py-2.5 bg-accent/20 border border-accent/50 hover:bg-accent hover:text-background text-foreground text-sm font-black rounded-xl transition-all cursor-pointer min-h-[44px]"
               type="button"
             >
               <Volume2 size={16} />
@@ -152,7 +163,7 @@ export default function PokemonDetailPage() {
         {/* Right Side: Stats & Entry Text */}
         <div className="flex flex-col gap-6">
           <div className="bg-surface/40 border border-accent/20 rounded-2xl p-6">
-            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-3 font-heading">
+            <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-3 font-heading">
               Database Entry
             </h2>
             <p className="text-sm leading-relaxed text-foreground/80 font-mono italic">
@@ -161,7 +172,7 @@ export default function PokemonDetailPage() {
           </div>
 
           <div className="bg-surface/40 border border-accent/20 rounded-2xl p-6">
-            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-4 font-heading">
+            <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-4 font-heading">
               Base Statistics
             </h2>
             {pokemon.stats.map((s) => (
@@ -178,7 +189,7 @@ export default function PokemonDetailPage() {
       {/* Evolution Chain Section */}
       {evoChain && evoChain.length > 1 && (
         <div className="mt-8 bg-surface/40 border border-accent/20 rounded-2xl p-6">
-          <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-4 font-heading text-center md:text-left">
+          <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-4 font-heading text-center md:text-left">
             Evolution Chain
           </h2>
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 py-2">
@@ -205,9 +216,11 @@ export default function PokemonDetailPage() {
                       alt={stage.name}
                       className="w-16 h-16 object-contain"
                       loading="lazy"
+                      width={64}
+                      height={64}
                     />
-                    <span className="text-xs capitalize font-heading mt-1">{stage.name}</span>
-                    <span className="text-[9px] font-mono text-muted-foreground mt-0.5">
+                    <span className="text-sm capitalize font-heading mt-1">{stage.name}</span>
+                    <span className="text-sm font-mono text-muted-foreground mt-0.5">
                       #{String(stage.id).padStart(3, '0')}
                     </span>
                   </Link>
