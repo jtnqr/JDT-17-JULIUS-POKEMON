@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import AreaPage from '@/pages/AreaPage'
 import MapPage from '@/pages/MapPage'
 import { useGameStore } from '@/stores/gameStore'
@@ -12,6 +12,10 @@ const queryClient = new QueryClient({
       retry: false,
     },
   },
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 const mockEncounterData = {
