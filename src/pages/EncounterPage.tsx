@@ -190,9 +190,16 @@ export default function EncounterPage() {
     navigate('/')
   }
 
-  const pokemonSprite = activeEncounter.isShiny
-    ? pokemon?.sprites?.front_shiny
-    : pokemon?.sprites?.front_default
+  const getEncounterSprite = () => {
+    if (!pokemon?.sprites) return undefined
+    const animated = pokemon.sprites.versions?.['generation-v']?.['black-white']?.animated
+    if (activeEncounter.isShiny) {
+      return animated?.front_shiny || pokemon.sprites.front_shiny
+    }
+    return animated?.front_default || pokemon.sprites.front_default
+  }
+
+  const pokemonSprite = getEncounterSprite()
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-between p-6 bg-radial-gradient(from-stone-900_to-background) scanlines relative">
