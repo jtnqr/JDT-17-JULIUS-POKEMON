@@ -22,6 +22,7 @@ export default function EncounterPage() {
   const setActiveEncounter = useGameStore((s) => s.setActiveEncounter)
   const currentAreaId = useGameStore((s) => s.currentAreaId)
   const catchPokemon = useCollectionStore((s) => s.catchPokemon)
+  const markSeen = useCollectionStore((s) => s.markSeen)
   const soundEnabled = useSettingsStore((s) => s.soundEnabled)
 
   // Call API hooks at the top level with a fallback species ID if activeEncounter is null
@@ -40,6 +41,13 @@ export default function EncounterPage() {
   const throwTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const shakeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const resolveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Mark species as seen when active encounter loads
+  useEffect(() => {
+    if (activeEncounter?.speciesId) {
+      markSeen(activeEncounter.speciesId)
+    }
+  }, [activeEncounter?.speciesId, markSeen])
 
   // Play Pokémon cry with proper cleanup
   useEffect(() => {

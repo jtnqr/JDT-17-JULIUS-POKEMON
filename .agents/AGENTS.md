@@ -24,10 +24,12 @@ Skills root: .agents/skills/
 | Zustand stores / selectors | `zustand` |
 | Any other task | Check global skills (`~/.gemini/config/plugins/`) |
 
-**If no skill exists for the task**, search for one before writing code:
-```bash
-bunx ctx7@latest library "<relevant-library>" "<question>"
-```
+**If no skill exists for the task**, fetch docs via the **context7 MCP server** before writing code:
+
+1. `resolve-library-id` — find the correct library ID (e.g. `/vercel/next.js`)
+2. `query-docs` — fetch relevant docs using that ID and the user's question
+
+Do **not** use `bunx ctx7@latest` CLI — the MCP server is faster and already available.
 
 If a skill is still missing after searching, install or write one before proceeding.
 Do NOT skip this step and jump straight to implementation.

@@ -16,8 +16,8 @@ export default function BagPage() {
     }
   }, [])
 
-  const speciesIds = bag.map((p) => p.speciesId)
-  const queries = useBagDetails(speciesIds)
+  const uniqueSpeciesIds = Array.from(new Set(bag.map((p) => p.speciesId)))
+  const queries = useBagDetails(uniqueSpeciesIds)
 
   const isLoading = queries.some((q) => q.isLoading)
   const isError = queries.some((q) => q.isError)

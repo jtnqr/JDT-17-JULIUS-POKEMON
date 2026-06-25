@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-const API_BASE = 'https://pokeapi.co/v2'
+const API_BASE = 'https://pokeapi.co/api/v2'
 
 export interface EncounterMethodRate {
   encounter_method: { name: string }
