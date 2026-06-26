@@ -1,0 +1,17 @@
+{
+  "name": "Pokédex Bronze",
+  "short_name": "PokédexBronze",
+  "description": "Explore, encounter, and catch Pokémon across all regions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1108",
+  "theme_color": "#1a1108",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
