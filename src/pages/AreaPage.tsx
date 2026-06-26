@@ -7,6 +7,7 @@ import { type PokemonEncounter, useLocationArea } from '@/hooks/useEncounter'
 import { useTimeOfDay } from '@/hooks/useTimeOfDay'
 import { staticAreas } from '@/lib/areaMap'
 import { getBiomeStyles } from '@/lib/areaMapHelper'
+import { getSpriteUrl } from '@/lib/sprites'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useGameStore } from '@/stores/gameStore'
 
@@ -106,7 +107,7 @@ export default function AreaPage() {
 
   return (
     <div
-      className={`min-h-[calc(100vh-4rem)] flex flex-col justify-between scanlines overflow-hidden ${bgStyles}`}
+      className={`h-[calc(100vh-4rem)] md:h-auto md:min-h-[calc(100vh-4rem)] flex flex-col justify-between md:justify-start scanlines overflow-hidden md:overflow-visible ${bgStyles}`}
     >
       <Helmet>
         <title>{`${area.name} — Pokédex Bronze`}</title>
@@ -137,7 +138,7 @@ export default function AreaPage() {
       </div>
 
       {/* Middle Silhouettes Drawer */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 z-10 text-center">
+      <div className="flex-1 overflow-y-auto md:overflow-visible p-6 z-10 text-center flex flex-col items-center justify-center md:justify-start md:flex-initial">
         {isLoading ? (
           <div className="w-full max-w-md">
             <SkeletonLoader className="h-40" />
@@ -180,7 +181,7 @@ export default function AreaPage() {
                     >
                       {/* Blacked out silhouette for retro mystery unless seen */}
                       <img
-                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sId}.png`}
+                        src={getSpriteUrl(sId)}
                         alt={isSeen ? e.pokemon.name : 'wild silhouette'}
                         loading="lazy"
                         className={`w-16 h-16 object-contain transition-all duration-300 ${
@@ -200,7 +201,7 @@ export default function AreaPage() {
       </div>
 
       {/* Bottom Explore Panel */}
-      <div className="bg-background/95 border-t border-accent/30 p-6 flex flex-col items-center z-10 w-full">
+      <div className="bg-background/95 border-t border-accent/30 p-6 flex flex-col items-center z-10 w-full shrink-0 md:relative md:bg-transparent md:border-t-0 md:p-0 md:mt-8 md:mb-12">
         <button
           onClick={handleExplore}
           disabled={isLoading || encounterPool.length === 0}

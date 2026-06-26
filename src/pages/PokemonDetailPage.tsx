@@ -5,6 +5,7 @@ import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
 import { StatBar } from '@/components/ui/StatBar'
 import { TypeBadge } from '@/components/ui/TypeBadge'
 import { useEvolutionChain, usePokemon, usePokemonSpecies } from '@/hooks/usePokemon'
+import { getSpriteUrl } from '@/lib/sprites'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useSettingsStore } from '@/stores/settingsStore'
 
@@ -212,7 +213,7 @@ export default function PokemonDetailPage() {
                     }`}
                   >
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stage.id}.png`}
+                      src={getSpriteUrl(stage.id)}
                       alt={stage.name}
                       className="w-16 h-16 object-contain"
                       loading="lazy"

@@ -1,9 +1,9 @@
 import { Lock, MapPin } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TimeOfDayBadge } from '@/components/ui/TimeOfDayBadge'
-import type { AreaNode, Region } from '@/lib/areaMap'
-import { getAreasByRegion, REGION_ORDER, staticAreas } from '@/lib/areaMap'
+import type { AreaNode } from '@/lib/areaMap'
+import { staticAreas } from '@/lib/areaMap'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useGameStore } from '@/stores/gameStore'
 
@@ -96,23 +96,6 @@ export function MobileRouteList() {
   const unlockedAreaIds = useGameStore((s) => s.unlockedAreaIds)
   const bag = useCollectionStore((s) => s.bag)
 
-  const [activeRegion, setActiveRegion] = useState<Region>(() => {
-    const currentAreaId = useGameStore.getState().currentAreaId
-    const area = staticAreas.find((a) => a.id === currentAreaId)
-    return area?.region ?? 'Kanto'
-  })
-
-  const currentAreaData = useMemo(
-    () => staticAreas.find((a) => a.id === currentAreaId),
-    [currentAreaId]
-  )
-
-  useEffect(() => {
-    if (currentAreaData) {
-      setActiveRegion(currentAreaData.region)
-    }
-  }, [currentAreaData])
-
   const caughtCountByArea = useMemo(() => {
     const counts: Record<string, number> = {}
     for (const area of staticAreas) {
@@ -123,20 +106,18 @@ export function MobileRouteList() {
     return counts
   }, [bag])
 
-  const areas = useMemo(() => getAreasByRegion(activeRegion), [activeRegion])
-
   const currentNodeRef = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
-    // Scroll current area into view when activeRegion changes
+    // Scroll current area into view when currentAreaId changes
     if (
-      activeRegion &&
+      currentAreaId &&
       currentNodeRef.current &&
       typeof currentNodeRef.current.scrollIntoView === 'function'
     ) {
       currentNodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-  }, [activeRegion])
+  }, [currentAreaId])
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
@@ -151,47 +132,17 @@ export function MobileRouteList() {
           </div>
           <TimeOfDayBadge />
         </div>
-
-        {/* Region tabs */}
-        <nav
-          aria-label="Select region"
-          className="flex gap-2 overflow-x-auto pb-3 px-4 pt-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none]"
-        >
-          {REGION_ORDER.map((region) => {
-            const hasUnlockedAreas = staticAreas.some(
-              (a) => a.region === region && unlockedAreaIds.includes(a.id)
-            )
-            return (
-              <button
-                key={region}
-                onClick={() => setActiveRegion(region)}
-                className={[
-                  'shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider',
-                  'transition-all duration-200 whitespace-nowrap border cursor-pointer',
-                  activeRegion === region
-                    ? 'bg-accent text-background border-highlight font-bold shadow-[0_0_12px_rgba(205,127,50,0.4)]'
-                    : 'bg-surface/40 border-accent/15 text-muted hover:border-accent/40 hover:text-text',
-                  !hasUnlockedAreas && 'opacity-50',
-                ].join(' ')}
-                aria-pressed={activeRegion === region}
-                type="button"
-              >
-                {region}
-              </button>
-            )
-          })}
-        </nav>
       </div>
 
       {/* Path List */}
       <div className="flex-1 pt-4">
-        {areas.length === 0 ? (
+        {staticAreas.length === 0 ? (
           <div className="text-center py-16 text-muted">
-            <p className="text-sm">No routes defined for this region yet.</p>
+            <p className="text-sm">No routes defined yet.</p>
           </div>
         ) : (
           <ol
-            aria-label={`${activeRegion} routes`}
+            aria-label="World Map routes"
             className="relative px-4"
             style={{ paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))' }}
           >
@@ -201,7 +152,7 @@ export function MobileRouteList() {
               className="absolute left-[30px] top-6 bottom-6 w-[2px] bg-accent/15"
             />
 
-            {areas.map((area) => {
+            {staticAreas.map((area) => {
               const state = getNodeState(area.id, currentAreaId, visitedAreaIds, unlockedAreaIds)
               const isLocked = state === 'locked'
               const isCurrent = state === 'current'

@@ -1,17 +1,16 @@
 type BallType = 'poke-ball' | 'great-ball' | 'ultra-ball' | 'master-ball'
 
-export function BallIcon({ type, className = 'w-5 h-5' }: { type: BallType; className?: string }) {
-  // SVG representation for Poke Balls with unique colors
-  let primaryColor = '#ef4444' // Poke Ball Red
-  const secondaryColor = '#f5f5f4' // White bottom
+const BALL_COLORS: Record<BallType, string> = {
+  'poke-ball': '#ef4444',
+  'great-ball': '#3b82f6',
+  'ultra-ball': '#eab308',
+  'master-ball': '#a855f7',
+}
 
-  if (type === 'great-ball') {
-    primaryColor = '#3b82f6' // Blue
-  } else if (type === 'ultra-ball') {
-    primaryColor = '#eab308' // Yellow/Black
-  } else if (type === 'master-ball') {
-    primaryColor = '#a855f7' // Purple
-  }
+const secondaryColor = '#f5f5f4'
+
+export function BallIcon({ type, className = 'w-5 h-5' }: { type: BallType; className?: string }) {
+  const primaryColor = BALL_COLORS[type]
 
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

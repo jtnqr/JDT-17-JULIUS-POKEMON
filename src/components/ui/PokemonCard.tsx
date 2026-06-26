@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { BallIcon } from '@/components/ui/BallIcon'
 import { TypeBadge } from '@/components/ui/TypeBadge'
+import { getAttackCategory } from '@/lib/typeData'
 
 interface PokemonCardProps {
   id: number
@@ -87,21 +88,35 @@ export function PokemonCard({
               ({name})
             </span>
           ) : (
-            <span
-              className="text-sm text-transparent font-mono select-none leading-tight"
-              aria-hidden="true"
-            >
-              &nbsp;
+            <span className="text-sm font-mono leading-tight invisible" aria-hidden="true">
+              x
             </span>
           )}
           <span className="text-sm text-accent font-semibold mt-1">
             #{String(id).padStart(3, '0')}
           </span>
 
-          <div className="flex gap-1 mt-2 flex-wrap justify-center max-h-[22px] overflow-hidden">
-            {types.map((t) => (
-              <TypeBadge key={t} type={t} />
-            ))}
+          <div className="flex gap-1.5 mt-2 flex-wrap justify-center items-center">
+            {types.map((t) => {
+              const attackType = getAttackCategory(t)
+              return (
+                <div
+                  key={t}
+                  className="flex items-center gap-1 bg-surface/80 px-1 py-0.5 rounded border border-accent/20"
+                >
+                  <TypeBadge type={t} />
+                  <span
+                    className={`text-[9px] px-1 py-0.5 rounded-sm font-bold uppercase font-sans ${
+                      attackType === 'Physical'
+                        ? 'bg-orange-500/10 text-orange-300 border border-orange-500/25'
+                        : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/25'
+                    }`}
+                  >
+                    {attackType}
+                  </span>
+                </div>
+              )
+            })}
           </div>
 
           {ballUsed ? (

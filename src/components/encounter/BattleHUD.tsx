@@ -21,17 +21,6 @@ export function BattleHUD({
         <span className="font-mono text-sm text-muted">Lvl {level}</span>
       </div>
 
-      {/* Visual Dummy HP bar */}
-      <div className="mb-2">
-        <div className="flex justify-between items-center text-sm text-muted mb-0.5">
-          <span>HP</span>
-          <span className="font-mono">100%</span>
-        </div>
-        <div className="h-2 w-full bg-background border border-accent/20 rounded-full overflow-hidden">
-          <div className="h-full bg-emerald-500 w-full" />
-        </div>
-      </div>
-
       <div className="flex gap-1">
         {types.map((t) => (
           <TypeBadge key={t} type={t} />

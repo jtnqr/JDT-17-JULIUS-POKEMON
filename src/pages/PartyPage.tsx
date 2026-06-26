@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { getSpriteUrl } from '@/lib/sprites'
 import { useCollectionStore } from '@/stores/collectionStore'
 
 export default function PartyPage() {
@@ -65,7 +66,7 @@ export default function PartyPage() {
                   {pokemon ? (
                     <div className="flex flex-col items-center mt-2 w-full">
                       <img
-                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.speciesId}.png`}
+                        src={getSpriteUrl(pokemon.speciesId)}
                         alt={pokemon.nickname}
                         className="w-14 h-14 sm:w-16 sm:h-16 object-contain"
                         width={64}
@@ -136,7 +137,7 @@ export default function PartyPage() {
                     type="button"
                   >
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.speciesId}.png`}
+                      src={getSpriteUrl(p.speciesId)}
                       alt={p.nickname}
                       className="w-12 h-12 object-contain"
                       width={48}

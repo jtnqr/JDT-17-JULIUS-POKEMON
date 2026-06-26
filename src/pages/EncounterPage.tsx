@@ -37,7 +37,6 @@ export default function EncounterPage() {
   const [selectedBall, setSelectedBall] = useState<
     'poke-ball' | 'great-ball' | 'ultra-ball' | 'master-ball'
   >('poke-ball')
-  const [shakeCount, setShakeCount] = useState(0)
   const [showNickname, setShowNickname] = useState(false)
   const [isCriticalCatch, setIsCriticalCatch] = useState(false)
 
@@ -150,7 +149,6 @@ export default function EncounterPage() {
       let currentShake = 0
       shakeIntervalRef.current = setInterval(() => {
         currentShake++
-        setShakeCount(currentShake)
         if (currentShake >= shakes) {
           if (shakeIntervalRef.current) {
             clearInterval(shakeIntervalRef.current)
@@ -264,9 +262,6 @@ export default function EncounterPage() {
           {catchState === 'shaking' && (
             <div className="animate-[bounce_0.4s_infinite] scale-150 relative">
               <BallIcon type={selectedBall} className="w-12 h-12 animate-pulse" />
-              <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-mono text-muted">
-                {'.'.repeat(shakeCount)}
-              </span>
             </div>
           )}
 

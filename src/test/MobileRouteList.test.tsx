@@ -3,7 +3,6 @@ import { act } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MobileRouteList } from '@/components/map/MobileRouteList'
-import { REGION_ORDER } from '@/lib/areaMap'
 import { useGameStore } from '@/stores/gameStore'
 
 describe('MobileRouteList', () => {
@@ -17,25 +16,16 @@ describe('MobileRouteList', () => {
     })
   })
 
-  it('renders all region tabs', () => {
+  it('renders the world map header and all areas in a single continuous path', () => {
     render(
       <MemoryRouter>
         <MobileRouteList />
       </MemoryRouter>
     )
-    for (const region of REGION_ORDER) {
-      expect(screen.getByRole('button', { name: region })).toBeInTheDocument()
-    }
-  })
-
-  it('defaults to the region of the current area', () => {
-    render(
-      <MemoryRouter>
-        <MobileRouteList />
-      </MemoryRouter>
-    )
-    const kantoTab = screen.getByRole('button', { name: 'Kanto' })
-    expect(kantoTab).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText(/world map/i)).toBeInTheDocument()
+    expect(screen.getByText('Pallet Town')).toBeInTheDocument()
+    expect(screen.getByText('Route 1')).toBeInTheDocument()
+    expect(screen.getByText('Route 45')).toBeInTheDocument()
   })
 
   it('locked areas have aria-label containing "locked"', () => {

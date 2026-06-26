@@ -3,6 +3,8 @@ import { Helmet } from 'react-helmet-async'
 import { PokemonCard } from '@/components/ui/PokemonCard'
 import { useBagDetails } from '@/hooks/usePokemon'
 import { TRAINER_BADGES } from '@/lib/badges'
+import { getSpriteUrl } from '@/lib/sprites'
+import { PHYSICAL_TYPES, SPECIAL_TYPES } from '@/lib/typeData'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useGameStore } from '@/stores/gameStore'
 
@@ -45,7 +47,14 @@ export default function BagPage() {
 
   const filteredBag = bag.filter((p) => {
     if (filterType === 'all') return true
-    return getPokemonTypes(p.speciesId).includes(filterType)
+    const types = getPokemonTypes(p.speciesId)
+    if (filterType === 'physical') {
+      return types.some((t) => PHYSICAL_TYPES.has(t.toLowerCase()))
+    }
+    if (filterType === 'special') {
+      return types.some((t) => SPECIAL_TYPES.has(t.toLowerCase()))
+    }
+    return types.includes(filterType)
   })
 
   if (isError) {
@@ -127,11 +136,31 @@ export default function BagPage() {
                 onChange={(e) => setFilterType(e.target.value)}
                 className="px-4 py-3 bg-surface border border-accent/40 rounded-xl text-foreground text-sm font-bold focus:outline-none min-h-[44px]"
               >
-                <option value="all">All Types</option>
-                <option value="electric">Electric</option>
-                <option value="fire">Fire</option>
-                <option value="water">Water</option>
-                <option value="grass">Grass</option>
+                <option value="all">All Types / Categories</option>
+                <optgroup label="Attack Type (Category)" className="text-accent bg-background">
+                  <option value="physical">Physical Category</option>
+                  <option value="special">Special Category</option>
+                </optgroup>
+                <optgroup label="Element (Type)" className="text-accent bg-background">
+                  <option value="normal">Normal</option>
+                  <option value="fire">Fire</option>
+                  <option value="water">Water</option>
+                  <option value="electric">Electric</option>
+                  <option value="grass">Grass</option>
+                  <option value="ice">Ice</option>
+                  <option value="fighting">Fighting</option>
+                  <option value="poison">Poison</option>
+                  <option value="ground">Ground</option>
+                  <option value="flying">Flying</option>
+                  <option value="psychic">Psychic</option>
+                  <option value="bug">Bug</option>
+                  <option value="rock">Rock</option>
+                  <option value="ghost">Ghost</option>
+                  <option value="dragon">Dragon</option>
+                  <option value="dark">Dark</option>
+                  <option value="steel">Steel</option>
+                  <option value="fairy">Fairy</option>
+                </optgroup>
               </select>
             )}
           </div>
@@ -153,9 +182,7 @@ export default function BagPage() {
               {filteredBag.map((p) => {
                 const types = getPokemonTypes(p.speciesId)
                 const originalName = getPokemonOriginalName(p.speciesId)
-                const sprite = p.isShiny
-                  ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${p.speciesId}.png`
-                  : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.speciesId}.png`
+                const sprite = getSpriteUrl(p.speciesId, p.isShiny)
                 return (
                   <div key={p.uid} className="flex flex-col gap-2 relative group">
                     <PokemonCard
