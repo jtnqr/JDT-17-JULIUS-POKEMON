@@ -3,6 +3,13 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { staticAreas } from '@/lib/areaMap'
 import { idbStorage } from '@/lib/idb-storage'
 
+const getInitialTimeOfDay = (): 'morning' | 'day' | 'night' => {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return 'morning'
+  if (hour >= 12 && hour < 18) return 'day'
+  return 'night'
+}
+
 interface GameState {
   currentAreaId: string | null
   visitedAreaIds: string[]
@@ -18,6 +25,7 @@ interface GameState {
   setCurrentAreaId: (id: string | null) => void
   visitArea: (id: string) => void
   setTimeOfDay: (time: 'morning' | 'day' | 'night') => void
+  cycleTimeOfDay: () => void
   setActiveEncounter: (encounter: GameState['activeEncounter']) => void
   resetGame: () => void
 }
@@ -28,7 +36,7 @@ export const useGameStore = create<GameState>()(
       currentAreaId: null,
       visitedAreaIds: [],
       unlockedAreaIds: ['pallet-town'],
-      timeOfDay: 'day',
+      timeOfDay: getInitialTimeOfDay(),
       activeEncounter: null,
 
       setCurrentAreaId: (id) => set({ currentAreaId: id }),
@@ -51,6 +59,15 @@ export const useGameStore = create<GameState>()(
         })
       },
       setTimeOfDay: (time) => set({ timeOfDay: time }),
+      cycleTimeOfDay: () => {
+        const current = get().timeOfDay
+        const nextMap: Record<'morning' | 'day' | 'night', 'morning' | 'day' | 'night'> = {
+          morning: 'day',
+          day: 'night',
+          night: 'morning',
+        }
+        set({ timeOfDay: nextMap[current] })
+      },
       setActiveEncounter: (encounter) => set({ activeEncounter: encounter }),
       resetGame: () =>
         set({

@@ -22,16 +22,22 @@ const TOD_CONFIG: Record<TimeSlot, { icon: ReactElement; label: string; colorSty
   },
 }
 
+import { useGameStore } from '@/stores/gameStore'
+
 export function TimeOfDayBadge() {
   const timeOfDay = useTimeOfDay()
+  const cycleTimeOfDay = useGameStore((s) => s.cycleTimeOfDay)
   const { icon, label, colorStyles } = TOD_CONFIG[timeOfDay]
 
   return (
-    <span
-      className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${colorStyles}`}
+    <button
+      type="button"
+      onClick={cycleTimeOfDay}
+      className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${colorStyles}`}
+      title="Time of Day (Cycles every minute). Click to cycle manually!"
     >
       {icon}
       <span>{label}</span>
-    </span>
+    </button>
   )
 }

@@ -1,4 +1,5 @@
-import { ArrowLeft, Volume2 } from 'lucide-react'
+import { ArrowLeft, Volume2, VolumeX } from 'lucide-react'
+import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useParams } from 'react-router-dom'
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
@@ -12,7 +13,9 @@ import { useSettingsStore } from '@/stores/settingsStore'
 export default function PokemonDetailPage() {
   const { id } = useParams<{ id: string }>()
   const soundEnabled = useSettingsStore((s) => s.soundEnabled)
+  const toggleSound = useSettingsStore((s) => s.toggleSound)
   const bag = useCollectionStore((s) => s.bag)
+  const [showMutedAlert, setShowMutedAlert] = useState(false)
 
   const {
     data: pokemon,
@@ -89,7 +92,21 @@ export default function PokemonDetailPage() {
   }
 
   const handlePlayCry = () => {
-    if (soundEnabled && pokemon.cries?.latest) {
+    if (soundEnabled) {
+      if (pokemon.cries?.latest) {
+        const audio = new Audio(pokemon.cries.latest)
+        audio.volume = 0.3
+        audio.play().catch(() => {})
+      }
+    } else {
+      setShowMutedAlert(true)
+    }
+  }
+
+  const handleUnmuteAndPlay = () => {
+    toggleSound()
+    setShowMutedAlert(false)
+    if (pokemon.cries?.latest) {
       const audio = new Audio(pokemon.cries.latest)
       audio.volume = 0.3
       audio.play().catch(() => {})
@@ -228,6 +245,42 @@ export default function PokemonDetailPage() {
                 </div>
               )
             })}
+          </div>
+        </div>
+      )}
+      {/* Mute Alert Popup */}
+      {showMutedAlert && (
+        <div className="!fixed inset-0 bg-background/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 scanlines animate-in fade-in duration-200">
+          <div className="bg-surface border-2 border-accent rounded-2xl max-w-sm w-full p-6 shadow-2xl relative flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 rounded-full bg-red-950/40 border border-red-500/30 flex items-center justify-center text-red-400 mb-4 animate-bounce">
+              <VolumeX size={32} />
+            </div>
+
+            <h2 className="text-xl font-extrabold tracking-wider text-highlight mb-2 font-heading uppercase">
+              Audio is Muted
+            </h2>
+            <p className="text-sm text-foreground/80 mb-6 font-mono">
+              The Pokémon's cry cannot be played because the device sound is muted. Would you like
+              to unmute and play it now?
+            </p>
+
+            <div className="flex flex-col gap-2 w-full">
+              <button
+                type="button"
+                onClick={handleUnmuteAndPlay}
+                className="w-full py-2.5 px-4 bg-accent hover:bg-gold text-bg font-bold font-heading rounded-xl text-sm transition-all cursor-pointer min-h-[44px] flex items-center justify-center gap-2 shadow-md hover:scale-102"
+              >
+                <Volume2 size={16} />
+                UNMUTE & PLAY
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowMutedAlert(false)}
+                className="w-full py-2.5 px-4 bg-surface/50 border border-accent/20 hover:border-accent/40 text-muted hover:text-foreground font-bold font-heading rounded-xl text-sm transition-all cursor-pointer min-h-[44px]"
+              >
+                CLOSE
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -12,6 +12,7 @@ interface PokemonCardProps {
   nickname?: string
   isShiny?: boolean
   partySlot?: number | null
+  flat?: boolean
 }
 
 export function PokemonCard({
@@ -23,12 +24,15 @@ export function PokemonCard({
   nickname,
   isShiny,
   partySlot,
+  flat,
 }: PokemonCardProps) {
-  const cardClassName = `block relative overflow-hidden backdrop-blur-sm rounded-xl p-4 transition-all duration-300 hover:scale-102 group scanlines h-[260px] ${
-    isShiny
-      ? 'bg-gradient-to-br from-amber-950/40 via-surface/80 to-yellow-900/40 border-2 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_0_20px_rgba(245,158,11,0.45)] holographic-card'
-      : 'bg-surface/60 border border-accent/40 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)]'
-  }`
+  const cardClassName = flat
+    ? 'block relative overflow-hidden p-4 w-full h-[260px]'
+    : `block relative overflow-hidden backdrop-blur-sm rounded-xl p-4 transition-all duration-300 hover:scale-102 group scanlines h-[260px] ${
+        isShiny
+          ? 'bg-gradient-to-br from-amber-950/40 via-surface/80 to-yellow-900/40 border-2 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_0_20px_rgba(245,158,11,0.45)] holographic-card'
+          : 'bg-surface/60 border border-accent/40 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)]'
+      }`
 
   return (
     <Link to={`/pokemon/${id}`} className={cardClassName}>

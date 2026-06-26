@@ -19,7 +19,7 @@ export function Header() {
     }`
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-accent/30 py-4 px-3 sm:px-6 flex justify-between items-center scanlines">
+    <header className="!sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-accent/30 py-4 px-3 sm:px-6 flex justify-between items-center scanlines">
       <div className="flex items-center gap-2 sm:gap-4">
         <Link to="/" className="group">
           <h1 className="text-lg sm:text-xl font-bold tracking-wider text-highlight group-hover:text-foreground transition-colors duration-300">

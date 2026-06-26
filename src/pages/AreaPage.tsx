@@ -3,6 +3,7 @@ import React from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
+import { TimeOfDayBadge } from '@/components/ui/TimeOfDayBadge'
 import { type PokemonEncounter, useLocationArea } from '@/hooks/useEncounter'
 import { useTimeOfDay } from '@/hooks/useTimeOfDay'
 import { staticAreas } from '@/lib/areaMap'
@@ -127,18 +128,21 @@ export default function AreaPage() {
           <ArrowLeft size={18} />
           <span className="font-semibold text-sm uppercase tracking-wider">Map</span>
         </Link>
-        <div className="flex flex-col items-end">
-          <h2 className="text-lg font-black tracking-wider text-highlight capitalize">
-            {area.name}
-          </h2>
-          <span className="text-sm text-muted uppercase tracking-widest">
-            {area.region} Region • {timeOfDay}
-          </span>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex flex-col items-end">
+            <h2 className="text-base sm:text-lg font-black tracking-wider text-highlight capitalize leading-tight">
+              {area.name}
+            </h2>
+            <span className="text-[10px] sm:text-xs text-muted uppercase tracking-widest leading-none mt-1">
+              {area.region} Region
+            </span>
+          </div>
+          <TimeOfDayBadge />
         </div>
       </div>
 
       {/* Middle Silhouettes Drawer */}
-      <div className="flex-1 overflow-y-auto md:overflow-visible p-6 z-10 text-center flex flex-col items-center justify-center md:justify-start md:flex-initial">
+      <div className="flex-1 overflow-y-auto md:overflow-visible p-6 mt-6 z-10 text-center flex flex-col items-center justify-center md:justify-start md:flex-initial">
         {isLoading ? (
           <div className="w-full max-w-md">
             <SkeletonLoader className="h-40" />

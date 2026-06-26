@@ -7,6 +7,7 @@ import PartyPage from '@/pages/PartyPage'
 import PokedexPage from '@/pages/PokedexPage'
 import PokemonDetailPage from '@/pages/PokemonDetailPage'
 import { useCollectionStore } from '@/stores/collectionStore'
+import { useSettingsStore } from '@/stores/settingsStore'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -198,6 +199,91 @@ describe('PokemonDetailPage', () => {
     expect(screen.getByText('NO. 025')).toBeInTheDocument()
     expect(screen.getByText('Pikachu mouse pokemon.')).toBeInTheDocument()
     expect(screen.getByText('PLAY CRY')).toBeInTheDocument()
+  })
+
+  it('shows alert when play cry is clicked and sound is muted, and can unmute', async () => {
+    // Set soundEnabled to false (muted)
+    act(() => {
+      useSettingsStore.setState({ soundEnabled: false })
+    })
+
+    // Mock fetch for Sandshrew
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (url.toString().includes('pokemon-species')) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 27,
+              flavor_text_entries: [
+                {
+                  flavor_text: 'Sandshrew mouse pokemon.',
+                  language: { name: 'en' },
+                },
+              ],
+            }),
+        } as Response)
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 27,
+            name: 'sandshrew',
+            sprites: {
+              front_default: 'sand-url',
+            },
+            types: [{ type: { name: 'ground' } }],
+            stats: [{ base_stat: 50, stat: { name: 'hp' } }],
+            cries: {
+              latest: 'cry-url',
+            },
+          }),
+      } as Response)
+    })
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/pokemon/27']}>
+          <Routes>
+            <Route path="/pokemon/:id" element={<PokemonDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+    // Wait for content to render
+    await waitFor(() => {
+      expect(screen.getByText('sandshrew')).toBeInTheDocument()
+    })
+
+    // Try playing cry when muted
+    const playCryBtn = screen.getByText('PLAY CRY')
+    fireEvent.click(playCryBtn)
+
+    // Alert modal should pop up
+    expect(screen.getByText('Audio is Muted')).toBeInTheDocument()
+    expect(screen.getByText(/Would you like to unmute and play it now/i)).toBeInTheDocument()
+
+    // Click unmute and play
+    const unmuteBtn = screen.getByText('UNMUTE & PLAY')
+
+    // Mock Audio
+    const playMock = vi.fn().mockResolvedValue(undefined)
+    class MockAudio {
+      volume = 0.3
+      play = playMock
+    }
+    vi.stubGlobal('Audio', MockAudio)
+
+    fireEvent.click(unmuteBtn)
+
+    // Modal should be closed, soundEnabled should be true
+    expect(screen.queryByText('Audio is Muted')).not.toBeInTheDocument()
+    expect(useSettingsStore.getState().soundEnabled).toBe(true)
+    expect(playMock).toHaveBeenCalled()
+
+    vi.unstubAllGlobals()
   })
 })
 

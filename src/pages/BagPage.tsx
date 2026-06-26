@@ -184,7 +184,14 @@ export default function BagPage() {
                 const originalName = getPokemonOriginalName(p.speciesId)
                 const sprite = getSpriteUrl(p.speciesId, p.isShiny)
                 return (
-                  <div key={p.uid} className="flex flex-col gap-2 relative group">
+                  <div
+                    key={p.uid}
+                    className={`flex flex-col relative group overflow-hidden rounded-xl border backdrop-blur-sm transition-all duration-300 hover:scale-102 scanlines ${
+                      p.isShiny
+                        ? 'bg-gradient-to-br from-amber-950/40 via-surface/80 to-yellow-900/40 border-2 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_0_20px_rgba(245,158,11,0.45)] holographic-card'
+                        : 'bg-surface/60 border-accent/40 hover:border-accent hover:shadow-[0_0_15px_rgba(205,127,50,0.3)]'
+                    }`}
+                  >
                     <PokemonCard
                       id={p.speciesId}
                       name={originalName}
@@ -194,10 +201,11 @@ export default function BagPage() {
                       ballUsed={p.ball}
                       isShiny={p.isShiny}
                       partySlot={p.partySlot}
+                      flat={true}
                     />
                     <button
                       onClick={() => handleRelease(p.uid)}
-                      className="w-full py-2 px-3 rounded-lg bg-red-950/80 border border-red-500/40 text-red-400 hover:bg-red-900 transition-colors z-20 text-sm font-bold cursor-pointer min-h-[44px] flex items-center justify-center"
+                      className="w-full py-2 text-xs font-bold text-red-400 hover:text-red-300 bg-background/40 hover:bg-red-950/20 border-t border-accent/20 transition-all cursor-pointer min-h-[36px] flex items-center justify-center uppercase tracking-wider z-20"
                       type="button"
                     >
                       RELEASE POKÉMON

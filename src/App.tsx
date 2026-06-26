@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { Header } from '@/components/ui/Header'
+import { useGameStore } from '@/stores/gameStore'
 
 // Lazy loaded page components for optimal bundle performance
 const MapPage = React.lazy(() => import('./pages/MapPage'))
@@ -22,6 +23,15 @@ function RouteSpinner() {
 }
 
 function App() {
+  const cycleTimeOfDay = useGameStore((s) => s.cycleTimeOfDay)
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      cycleTimeOfDay()
+    }, 60000) // cycle every 60 seconds (1 minute)
+    return () => clearInterval(interval)
+  }, [cycleTimeOfDay])
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans select-none antialiased">
       <Header />

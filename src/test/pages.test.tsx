@@ -185,7 +185,8 @@ describe('AreaPage Component', () => {
       } as Response)
     )
 
-    // Force date to be day time (12:00)
+    // Force store to be day time
+    useGameStore.getState().setTimeOfDay('day')
     vi.spyOn(Date.prototype, 'getHours').mockReturnValue(12)
 
     render(

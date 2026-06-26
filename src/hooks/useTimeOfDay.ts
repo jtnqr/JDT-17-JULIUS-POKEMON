@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useGameStore } from '@/stores/gameStore'
 
 export function getTimeSlot(hour: number): 'morning' | 'day' | 'night' {
@@ -8,13 +7,6 @@ export function getTimeSlot(hour: number): 'morning' | 'day' | 'night' {
 }
 
 export function useTimeOfDay() {
-  const setTimeOfDay = useGameStore((s) => s.setTimeOfDay)
   const timeOfDay = useGameStore((s) => s.timeOfDay)
-
-  useEffect(() => {
-    const hour = new Date().getHours()
-    setTimeOfDay(getTimeSlot(hour))
-  }, [setTimeOfDay])
-
   return timeOfDay
 }

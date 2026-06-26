@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { TimeOfDayBadge } from '@/components/ui/TimeOfDayBadge'
 import { staticAreas } from '@/lib/areaMap'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useGameStore } from '@/stores/gameStore'
@@ -19,11 +20,16 @@ export function DesktopWorldMap() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] p-6 flex flex-col items-center scanlines">
-      <div className="max-w-4xl w-full text-center mb-6">
-        <h2 className="text-3xl font-extrabold tracking-wider text-highlight mb-2">WORLD MAP</h2>
-        <p className="text-muted text-sm">
-          Select an unlocked route to explore and encounter wild Pokémon.
-        </p>
+      <div className="max-w-4xl w-full flex justify-between items-center mb-6 bg-surface/30 p-4 border border-accent/20 rounded-2xl backdrop-blur-xs">
+        <div className="text-left">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-highlight leading-none">
+            WORLD MAP
+          </h2>
+          <p className="text-muted text-xs sm:text-sm mt-1.5">
+            Select an unlocked route to explore and encounter wild Pokémon.
+          </p>
+        </div>
+        <TimeOfDayBadge />
       </div>
 
       {/* Styled Interactive Node Map Canvas */}
