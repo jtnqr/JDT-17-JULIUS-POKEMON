@@ -34,17 +34,16 @@ export const useCollectionStore = create<CollectionState>()(
 
       catchPokemon: (pokemon) => {
         const uid = crypto.randomUUID()
+        const { bag, seenSpecies } = get()
         const newPokemon: CaughtPokemon = {
           ...pokemon,
           uid,
           caughtAt: new Date().toISOString(),
           partySlot: null,
         }
-
-        const bag = get().bag
-        const nextSeen = get().seenSpecies.includes(pokemon.speciesId)
-          ? get().seenSpecies
-          : [...get().seenSpecies, pokemon.speciesId]
+        const nextSeen = seenSpecies.includes(pokemon.speciesId)
+          ? seenSpecies
+          : [...seenSpecies, pokemon.speciesId]
 
         set({
           bag: [...bag, newPokemon],

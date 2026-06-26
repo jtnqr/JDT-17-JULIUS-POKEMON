@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { staticAreas } from '@/lib/areaMap'
 import AreaPage from '@/pages/AreaPage'
 import MapPage from '@/pages/MapPage'
 import { useGameStore } from '@/stores/gameStore'
@@ -56,8 +57,8 @@ describe('MapPage Component', () => {
     )
 
     expect(screen.getByText('WORLD MAP')).toBeInTheDocument()
-    expect(screen.getByText('Pallet Town')).toBeInTheDocument()
-    expect(screen.getByText('Route 1')).toBeInTheDocument()
+    expect(screen.getAllByText('Pallet Town').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Route 1').length).toBeGreaterThan(0)
   })
 })
 
@@ -205,4 +206,33 @@ describe('AreaPage Component', () => {
     // Hoothoot should NOT be in the document (it's daytime and it has time-night condition)
     expect(screen.queryByText('hoothoot')).not.toBeInTheDocument()
   })
+})
+
+describe('AreaPage Encounter Error fallback for all routes', () => {
+  for (const area of staticAreas) {
+    it(`renders error state for area "${area.id}" (${area.name}) when fetch fails`, async () => {
+      vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
+        Promise.resolve({
+          ok: false,
+          status: 500,
+        } as Response)
+      )
+
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={[`/area/${area.id}`]}>
+            <Routes>
+              <Route path="/area/:id" element={<AreaPage />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Failed loading wild Pokemon encounter tables.')
+        ).toBeInTheDocument()
+      })
+    })
+  }
 })

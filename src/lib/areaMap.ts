@@ -1,7 +1,18 @@
+export type Region =
+  | 'Kanto'
+  | 'Johto'
+  | 'Hoenn'
+  | 'Sinnoh'
+  | 'Unova'
+  | 'Kalos'
+  | 'Alola'
+  | 'Galar'
+  | 'Paldea'
+
 export interface AreaNode {
   id: string
   name: string
-  region: string
+  region: Region
   biome:
     | 'forest'
     | 'grassland'
@@ -19,6 +30,18 @@ export interface AreaNode {
   coords: { x: number; y: number }
   locationAreaName: string // PokéAPI location-area identifier
 }
+
+export const REGION_ORDER: Region[] = [
+  'Kanto',
+  'Johto',
+  'Hoenn',
+  'Sinnoh',
+  'Unova',
+  'Kalos',
+  'Alola',
+  'Galar',
+  'Paldea',
+]
 
 export const staticAreas: AreaNode[] = [
   {
@@ -63,7 +86,7 @@ export const staticAreas: AreaNode[] = [
     maxLevel: 7,
     prerequisites: ['viridian-city'],
     coords: { x: 20, y: 40 },
-    locationAreaName: 'kanto-route-2-area',
+    locationAreaName: 'kanto-route-2-south-towards-viridian-city',
   },
   {
     id: 'viridian-forest',
@@ -107,7 +130,7 @@ export const staticAreas: AreaNode[] = [
     maxLevel: 15,
     prerequisites: ['kanto-route-3'],
     coords: { x: 65, y: 15 },
-    locationAreaName: 'mt-moon-area',
+    locationAreaName: 'mt-moon-1f',
   },
   {
     id: 'cerulean-city',
@@ -140,7 +163,7 @@ export const staticAreas: AreaNode[] = [
     maxLevel: 25,
     prerequisites: ['kanto-route-9'],
     coords: { x: 80, y: 45 },
-    locationAreaName: 'rock-tunnel-area',
+    locationAreaName: 'rock-tunnel-1f',
   },
   {
     id: 'lavender-town',
@@ -162,7 +185,7 @@ export const staticAreas: AreaNode[] = [
     maxLevel: 30,
     prerequisites: ['lavender-town'],
     coords: { x: 90, y: 60 },
-    locationAreaName: 'pokemon-tower-area',
+    locationAreaName: 'pokemon-tower-1f',
   },
   {
     id: 'kanto-route-12',
@@ -195,7 +218,7 @@ export const staticAreas: AreaNode[] = [
     maxLevel: 35,
     prerequisites: ['fuchsia-city'],
     coords: { x: 60, y: 60 },
-    locationAreaName: 'kanto-safari-zone-area',
+    locationAreaName: 'kanto-safari-zone-middle',
   },
   {
     id: 'seafoam-islands',
@@ -206,7 +229,7 @@ export const staticAreas: AreaNode[] = [
     maxLevel: 40,
     prerequisites: ['fuchsia-city'],
     coords: { x: 45, y: 85 },
-    locationAreaName: 'seafoam-islands-area',
+    locationAreaName: 'seafoam-islands-1f',
   },
   {
     id: 'cinnabar-island',
@@ -231,3 +254,7 @@ export const staticAreas: AreaNode[] = [
     locationAreaName: 'johto-route-45-area',
   },
 ]
+
+export function getAreasByRegion(region: Region): AreaNode[] {
+  return staticAreas.filter((a) => a.region === region)
+}

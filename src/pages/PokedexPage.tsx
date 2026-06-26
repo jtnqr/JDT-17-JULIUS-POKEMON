@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { usePokedexList } from '@/hooks/usePokemon'
+import { getSpriteUrl } from '@/lib/sprites'
 import { useCollectionStore } from '@/stores/collectionStore'
 
 export default function PokedexPage() {
@@ -111,7 +112,7 @@ export default function PokedexPage() {
                 {seen ? (
                   <>
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`}
+                      src={getSpriteUrl(p.id)}
                       alt={p.name}
                       className={`w-12 h-12 object-contain ${caught ? '' : 'brightness-0 opacity-40'}`}
                       loading="lazy"

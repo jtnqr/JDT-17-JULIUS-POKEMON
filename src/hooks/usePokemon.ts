@@ -8,6 +8,16 @@ export interface PokemonDetail {
   sprites: {
     front_default: string
     front_shiny: string
+    versions?: {
+      'generation-v'?: {
+        'black-white'?: {
+          animated?: {
+            front_default: string | null
+            front_shiny: string | null
+          }
+        }
+      }
+    }
   }
   types: Array<{
     type: { name: string }

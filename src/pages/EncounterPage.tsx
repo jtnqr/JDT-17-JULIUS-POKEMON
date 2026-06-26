@@ -8,6 +8,7 @@ import { NicknameModal } from '@/components/encounter/NicknameModal'
 import { BallIcon } from '@/components/ui/BallIcon'
 import { usePokemon, usePokemonSpecies } from '@/hooks/usePokemon'
 import { staticAreas } from '@/lib/areaMap'
+import { getBiomeStyles } from '@/lib/areaMapHelper'
 import { calculateCatchChance } from '@/lib/catchCalc'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useGameStore } from '@/stores/gameStore'
@@ -22,6 +23,7 @@ export default function EncounterPage() {
   const activeEncounter = useGameStore((s) => s.activeEncounter)
   const setActiveEncounter = useGameStore((s) => s.setActiveEncounter)
   const currentAreaId = useGameStore((s) => s.currentAreaId)
+  const timeOfDay = useGameStore((s) => s.timeOfDay)
   const catchPokemon = useCollectionStore((s) => s.catchPokemon)
   const markSeen = useCollectionStore((s) => s.markSeen)
   const soundEnabled = useSettingsStore((s) => s.soundEnabled)
@@ -35,8 +37,8 @@ export default function EncounterPage() {
   const [selectedBall, setSelectedBall] = useState<
     'poke-ball' | 'great-ball' | 'ultra-ball' | 'master-ball'
   >('poke-ball')
-  const [shakeCount, setShakeCount] = useState(0)
   const [showNickname, setShowNickname] = useState(false)
+  const [isCriticalCatch, setIsCriticalCatch] = useState(false)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const throwTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -47,6 +49,7 @@ export default function EncounterPage() {
   useEffect(() => {
     if (activeEncounter?.speciesId) {
       markSeen(activeEncounter.speciesId)
+      setIsCriticalCatch(false)
     }
   }, [activeEncounter?.speciesId, markSeen])
 
@@ -111,6 +114,7 @@ export default function EncounterPage() {
       activeEncounter.level
     )
     const success = Math.random() <= probability
+    const isCritical = success && ball !== 'master-ball' && Math.random() < 0.05
 
     // Clean up any existing animations first
     if (throwTimeoutRef.current) clearTimeout(throwTimeoutRef.current)
@@ -121,18 +125,30 @@ export default function EncounterPage() {
     throwTimeoutRef.current = setTimeout(() => {
       setCatchState('shaking')
 
-      // Determine shakes based on proximity (Master ball = 3, high probability = 3, low = 1-2)
-      const shakes =
-        ball === 'master-ball'
-          ? 3
-          : Math.random() < probability
-            ? 3
-            : Math.floor(Math.random() * 2) + 1
+      // Determine shakes based on success and critical status
+      let shakes = 3
+      if (isCritical) {
+        shakes = 1
+      } else if (!success) {
+        // Map failure shakes based on proximity of failure
+        const roll = Math.random()
+        if (probability < 0.1) {
+          shakes = roll < 0.8 ? 0 : 1
+        } else if (probability > 0.5) {
+          shakes = roll < 0.3 ? 0 : roll < 0.7 ? 1 : 2
+        } else {
+          shakes = roll < 0.4 ? 0 : roll < 0.8 ? 1 : 2
+        }
+      }
+
+      if (shakes === 0) {
+        setCatchState('escaped')
+        return
+      }
 
       let currentShake = 0
       shakeIntervalRef.current = setInterval(() => {
         currentShake++
-        setShakeCount(currentShake)
         if (currentShake >= shakes) {
           if (shakeIntervalRef.current) {
             clearInterval(shakeIntervalRef.current)
@@ -142,6 +158,7 @@ export default function EncounterPage() {
             if (success) {
               setCatchState('caught')
               setShowNickname(true)
+              setIsCriticalCatch(isCritical)
             } else {
               setCatchState('escaped')
             }
@@ -173,12 +190,25 @@ export default function EncounterPage() {
     navigate('/')
   }
 
-  const pokemonSprite = activeEncounter.isShiny
-    ? pokemon?.sprites?.front_shiny
-    : pokemon?.sprites?.front_default
+  const getEncounterSprite = () => {
+    if (!pokemon?.sprites) return undefined
+    const animated = pokemon.sprites.versions?.['generation-v']?.['black-white']?.animated
+    if (activeEncounter.isShiny) {
+      return animated?.front_shiny || pokemon.sprites.front_shiny
+    }
+    return animated?.front_default || pokemon.sprites.front_default
+  }
+
+  const pokemonSprite = getEncounterSprite()
+
+  const currentArea = staticAreas.find((a) => a.id === currentAreaId)
+  const biome = currentArea?.biome || 'grassland'
+  const bgStyles = getBiomeStyles(biome, timeOfDay)
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-between p-6 bg-radial-gradient(from-stone-900_to-background) scanlines relative">
+    <div
+      className={`min-h-[calc(100vh-4rem)] flex flex-col justify-between p-6 scanlines overflow-hidden ${bgStyles}`}
+    >
       <Helmet>
         <title>Wild Encounter — Pokédex Bronze</title>
         <meta
@@ -232,9 +262,6 @@ export default function EncounterPage() {
           {catchState === 'shaking' && (
             <div className="animate-[bounce_0.4s_infinite] scale-150 relative">
               <BallIcon type={selectedBall} className="w-12 h-12 animate-pulse" />
-              <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-mono text-muted">
-                {'.'.repeat(shakeCount)}
-              </span>
             </div>
           )}
 
@@ -262,13 +289,22 @@ export default function EncounterPage() {
       {/* Ball Picker Panel */}
       <div className="flex justify-center z-10">
         {catchState === 'idle' && (
-          <BallPicker onSelect={handleCatchAttempt} disabled={catchState !== 'idle'} />
+          <BallPicker
+            onSelect={handleCatchAttempt}
+            disabled={catchState !== 'idle'}
+            captureRate={species?.capture_rate}
+            level={activeEncounter.level}
+          />
         )}
       </div>
 
       {/* Gotcha Nickname Overlay */}
       {showNickname && (
-        <NicknameModal speciesName={activeEncounter.name} onConfirm={handleNicknameConfirm} />
+        <NicknameModal
+          speciesName={activeEncounter.name}
+          onConfirm={handleNicknameConfirm}
+          isCritical={isCriticalCatch}
+        />
       )}
     </div>
   )

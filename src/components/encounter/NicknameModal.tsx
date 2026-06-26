@@ -4,9 +4,10 @@ import { useState } from 'react'
 interface NicknameModalProps {
   speciesName: string
   onConfirm: (nickname: string) => void
+  isCritical?: boolean
 }
 
-export function NicknameModal({ speciesName, onConfirm }: NicknameModalProps) {
+export function NicknameModal({ speciesName, onConfirm, isCritical }: NicknameModalProps) {
   const [nickname, setNickname] = useState(
     speciesName.charAt(0).toUpperCase() + speciesName.slice(1)
   )
@@ -22,6 +23,11 @@ export function NicknameModal({ speciesName, onConfirm }: NicknameModalProps) {
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-surface border-2 border-accent rounded-2xl p-6 shadow-[0_0_30px_rgba(205,127,50,0.3)]"
       >
+        {isCritical && (
+          <div className="text-center font-black text-amber-500 mb-1 animate-[pulse_1s_infinite] tracking-wider text-xs sm:text-sm">
+            ✨ CRITICAL CATCH! ✨
+          </div>
+        )}
         <h3 className="text-lg font-black tracking-wider text-highlight text-center mb-4">
           GOTCHA!
         </h3>

@@ -105,3 +105,37 @@
     6px 100%;
   pointer-events: none;
 }
+
+/* Shiny holographic card effect */
+@keyframes holographic-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.holographic-card {
+  background-size: 200% 200%;
+  animation: holographic-shimmer 6s ease infinite;
+}
+
+@keyframes float-sparkle {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+.sparkle-animation {
+  animation: float-sparkle 2s ease-in-out infinite;
+}
