@@ -2,6 +2,19 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { idbStorage } from '@/lib/idb-storage'
 
+// Safe helper for randomUUID() to support non-secure HTTP contexts
+const generateUUID = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // Fallback UUID v4 generator for non-secure HTTP contexts
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
 export interface CaughtPokemon {
   uid: string
   speciesId: number
@@ -33,7 +46,7 @@ export const useCollectionStore = create<CollectionState>()(
       seenSpecies: [],
 
       catchPokemon: (pokemon) => {
-        const uid = crypto.randomUUID()
+        const uid = generateUUID()
         const { bag, seenSpecies } = get()
         const newPokemon: CaughtPokemon = {
           ...pokemon,
